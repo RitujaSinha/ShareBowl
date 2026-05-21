@@ -5,14 +5,19 @@ import Home from './pages/Home.jsx'
 import Signup from './pages/Signup.jsx'
 import OrganizationSignup from './pages/organisation/OrganizationSignup.jsx'
 import DonorSignup from './pages/donor/DonorSignup.jsx'
+import DonorDashboard from './pages/DonorDashboard'
+import AddDonation from './pages/AddDonation'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Routes>
+
       <Route  path="/" element={<Home/>} />
       <Route path = "/signup" element = {<Signup/>} />
       <Route path="/signup/donorsignup" element={<DonorSignup />} />
       <Route path="/signup/organizationsignup" element={<OrganizationSignup />} />
+      <Route path="/donor" element={<DonorDashboard />} />
+      <Route path="/add-donation" element={<AddDonation />} />
     </Routes>
   </BrowserRouter>
 )
