@@ -25,7 +25,7 @@ export default function Signup() {
           </p>
 
           <button className='mt-8 w-full rounded-xl bg-indigo-600 py-4 text-lg font-semibold transition duration-300 hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.8)]'>
-            <Link to="/">
+            <Link to="/signup/organizationsignup">
               Register
             </Link>
           </button>
@@ -43,7 +43,7 @@ export default function Signup() {
           </p>
 
           <button className='mt-8 w-full rounded-xl bg-yellow-400 py-4 text-lg font-semibold text-black transition duration-300 hover:bg-yellow-300 hover:shadow-[0_0_20px_rgba(250,204,21,0.8)]'>
-            <Link to="/">
+            <Link to="/signup/donorsignup">
               Register
             </Link>
           </button>
