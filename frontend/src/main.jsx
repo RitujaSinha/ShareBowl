@@ -8,6 +8,8 @@ import OrganizationSignup from './pages/organisation/OrganizationSignup.jsx'
 import DonorSignup from './pages/donor/DonorSignup.jsx'
 import DonorDashboard from './pages/donor/DonorDashboard'
 import AddDonation from './pages/donor/AddDonation'
+import MyDonations from "./pages/donor/MyDonations";
+
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -20,6 +22,7 @@ createRoot(document.getElementById('root')).render(
       <Route path="/signup/organizationsignup" element={<OrganizationSignup />} />
       <Route path="/donor" element={<DonorDashboard />} />
       <Route path="/add-donation" element={<AddDonation />} />
+      <Route path="/my-donations" element={<MyDonations />} />
     </Routes>
   </BrowserRouter>
 )
