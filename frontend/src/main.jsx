@@ -5,8 +5,8 @@ import Home from './pages/Home.jsx'
 import Signup from './pages/Signup.jsx'
 import OrganizationSignup from './pages/organisation/OrganizationSignup.jsx'
 import DonorSignup from './pages/donor/DonorSignup.jsx'
-import DonorDashboard from './pages/DonorDashboard'
-import AddDonation from './pages/AddDonation'
+import DonorDashboard from './pages/donor//DonorDashboard'
+import AddDonation from './pages/donor/AddDonation'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
