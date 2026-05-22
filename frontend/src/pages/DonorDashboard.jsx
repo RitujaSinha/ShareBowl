@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function DonorDashboard() {
   const navigate = useNavigate();
+  const location = useLocation(); // 🔥 for auto refresh
+
   const [donations, setDonations] = useState([]);
 
-  // 🔥 Function to fetch data
+  // 🚀 Fetch data
   const fetchDonations = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/donations");
@@ -16,15 +18,19 @@ function DonorDashboard() {
     }
   };
 
-  // 🚀 Fetch when component loads
+  // 🔥 Auto refresh when route changes
   useEffect(() => {
     fetchDonations();
-  }, []);
+  }, [location]);
 
   // 📊 Stats
   const total = donations.length;
-  const accepted = donations.filter(d => d.status === "Accepted").length;
-  const pending = donations.filter(d => d.status === "Pending").length;
+  const accepted = donations.filter(
+    (d) => d.status === "Accepted"
+  ).length;
+  const pending = donations.filter(
+    (d) => d.status === "Pending"
+  ).length;
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -79,9 +85,7 @@ function DonorDashboard() {
 
         {/* My Donations */}
         <div
-          onClick={() => {
-            navigate("/my-donations");
-          }}
+          onClick={() => navigate("/my-donations")}
           className="bg-white p-6 rounded-xl shadow cursor-pointer hover:shadow-lg hover:scale-105 transition"
         >
           <h2 className="text-xl font-semibold mb-2">
@@ -92,16 +96,6 @@ function DonorDashboard() {
           </p>
         </div>
 
-      </div>
-
-      {/* 🔥 Refresh Button (temporary but useful) */}
-      <div className="mt-6">
-        <button
-          onClick={fetchDonations}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Refresh Data 🔄
-        </button>
       </div>
 
     </div>
