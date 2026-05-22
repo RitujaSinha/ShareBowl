@@ -8,6 +8,12 @@ const organisationSchema = new Schema({
         trim:true,
     },
 
+    role:{
+        type:String,
+        default:"organisation",
+        immutable:true
+    },
+
     organisationID:{
         type:String,
         required:true,
