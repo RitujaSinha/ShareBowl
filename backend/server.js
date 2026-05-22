@@ -2,6 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import connectDb from "./config/connectDB.js"
 import cors from "cors"
+import donationRoutes from "./routes/donationRoutes.js"
 
 dotenv.config();
 
@@ -10,12 +11,14 @@ const app = express();
 
 //parsing data
 app.use(cors({
-    origin:""
-}))
+    origin: "http://localhost:5173"
+  }));
 
 app.use(express.json())
 
-const PORT = process.env.PORT || 6000
+app.use("/api/donations", donationRoutes);
+
+const PORT = process.env.PORT || 5000
 
 app.listen(PORT, ()=> {
     try {
