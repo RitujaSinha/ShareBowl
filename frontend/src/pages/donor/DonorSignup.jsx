@@ -1,165 +1,118 @@
-import React from 'react'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function DonorSignup() {
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    street: "",
+    city: "",
+    district: "",
+    state: "",
+    pincode: "",
+    password: "",
+    repassword: "",
+  });
+
+  // 🔥 Handle input
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.id]: e.target.value });
+  };
+
+  // 🚀 Submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (form.password !== form.repassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/users/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          password: form.password,
+          role: "donor",
+          address: {
+            street: form.street,
+            city: form.city,
+            district: form.district,
+            state: form.state,
+            pincode: form.pincode,
+          },
+        }),
+      });
+
+      const data = await res.json();
+
+      alert(data.message || "Signup successful 🎉");
+
+      // 🔥 Redirect to login
+      navigate("/login");
+
+    } catch (error) {
+      console.error(error);
+      alert("Signup failed");
+    }
+  };
+
   return (
     <div className='min-h-screen bg-black px-6 py-10 text-white'>
 
-      <p className='mx-auto mb-10 max-w-3xl text-center text-lg leading-0 text-zinc-300'>
+      <p className='mx-auto mb-10 max-w-3xl text-center text-lg text-zinc-300'>
         Register to be Donor
       </p>
 
       <div className='mx-auto max-w-4xl rounded-3xl border border-zinc-800 bg-zinc-900 p-10'>
 
-        <form className='flex flex-col gap-6'>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
 
-          <fieldset className='flex flex-col gap-6'>
+          <legend className='mb-6 text-4xl font-bold text-yellow-400'>
+            Create Account
+          </legend>
 
-            <legend className='mb-6 text-4xl font-bold text-yellow-400'>
-              Create Account
-            </legend>
+          {/* Name */}
+          <input id="name" placeholder="Name" onChange={handleChange} className="input" />
 
-            {/* Donor  Name */}
-            <div className='flex flex-col gap-2'>
-              <label htmlFor="donorname">Donor Name</label>
+          {/* Email */}
+          <input id="email" type="email" placeholder="Email" onChange={handleChange} className="input" />
 
-              <input
-                id='donorname'
-                type='text'
-                required
-                placeholder='Enter your name'
-                className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
-              />
-            </div>
+          {/* Phone */}
+          <input id="phone" placeholder="Phone" onChange={handleChange} className="input" />
 
-            {/* Email */}
-            <div className='flex flex-col gap-2'>
-              <label htmlFor="email">Email</label>
+          {/* Address */}
+          <input id="street" placeholder="Street" onChange={handleChange} className="input" />
+          <input id="city" placeholder="City" onChange={handleChange} className="input" />
+          <input id="district" placeholder="District" onChange={handleChange} className="input" />
+          <input id="state" placeholder="State" onChange={handleChange} className="input" />
+          <input id="pincode" placeholder="Pincode" onChange={handleChange} className="input" />
 
-              <input
-                id='email'
-                type='email'
-                required
-                placeholder='Enter email'
-                className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
-              />
-            </div>
+          {/* Password */}
+          <input id="password" type="password" placeholder="Password" onChange={handleChange} className="input" />
 
-            {/* Phone */}
-            <div className='flex flex-col gap-2'>
-              <label htmlFor="phone">Phone Number</label>
+          {/* Confirm Password */}
+          <input id="repassword" type="password" placeholder="Confirm Password" onChange={handleChange} className="input" />
 
-              <input
-                id='phone'
-                type='tel'
-                required
-                placeholder='Enter phone number'
-                className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
-              />
-            </div>
-
-            {/* Street */}
-            <div className='flex flex-col gap-2'>
-              <label htmlFor="street">Street</label>
-
-              <input
-                id='street'
-                type='text'
-                required
-                placeholder='Enter street'
-                className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
-              />
-            </div>
-
-            {/* City */}
-            <div className='flex flex-col gap-2'>
-              <label htmlFor="city">City</label>
-
-              <input
-                id='city'
-                type='text'
-                required
-                placeholder='Enter city'
-                className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
-              />
-            </div>
-
-            {/* District */}
-            <div className='flex flex-col gap-2'>
-              <label htmlFor="district">District</label>
-
-              <input
-                id='district'
-                type='text'
-                required
-                placeholder='Enter district'
-                className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
-              />
-            </div>
-
-            {/* State */}
-            <div className='flex flex-col gap-2'>
-              <label htmlFor="state">State</label>
-
-              <input
-                id='state'
-                type='text'
-                required
-                placeholder='Enter state'
-                className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
-              />
-            </div>
-
-            {/* Pincode */}
-            <div className='flex flex-col gap-2'>
-              <label htmlFor="pincode">Pincode</label>
-
-              <input
-                id='pincode'
-                type='number'
-                required
-                placeholder='Enter pincode'
-                className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
-              />
-            </div>
-
-            {/* Password */}
-            <div className='flex flex-col gap-2'>
-              <label htmlFor="password">Password</label>
-
-              <input
-                id='password'
-                type='password'
-                required
-                placeholder='Enter password'
-                className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
-              />
-            </div>
-
-            {/* Confirm Password */}
-            <div className='flex flex-col gap-2'>
-              <label htmlFor="repassword">Re-enter Password</label>
-
-              <input
-                id='repassword'
-                type='password'
-                required
-                placeholder='Re-enter password'
-                className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
-              />
-            </div>
-
-            {/* Button */}
-            <button
-              type='submit'
-              className='mt-6 rounded-xl bg-yellow-400 py-4 text-xl font-bold text-black transition duration-300 hover:bg-yellow-300 hover:shadow-[0_0_20px_rgba(250,204,21,0.8)]'
-            >
-              Sign Up
-            </button>
-
-          </fieldset>
+          {/* Button */}
+          <button
+            type="submit"
+            className="mt-6 rounded-xl bg-yellow-400 py-4 text-xl font-bold text-black hover:bg-yellow-300"
+          >
+            Sign Up
+          </button>
 
         </form>
       </div>
     </div>
-  )
+  );
 }
