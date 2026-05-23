@@ -4,7 +4,6 @@ import connectDb from "./config/connectDB.js"
 import cors from "cors"
 import donationRoutes from "./routes/donationRoutes.js"
 import authRoutes from "./routes/auth.routes.js"
-
 dotenv.config();
 
 const app = express();
