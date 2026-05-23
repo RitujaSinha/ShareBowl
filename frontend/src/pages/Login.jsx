@@ -25,7 +25,7 @@ export default function Login() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/login", {
+      const res = await fetch("http://localhost:8000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,6 +33,7 @@ export default function Login() {
         body: JSON.stringify({
           email: form.email,
           password: form.password,
+          role: form.role
         }),
       });
 
@@ -43,20 +44,20 @@ export default function Login() {
         return;
       }
 
-      // 🔥 Check role match
+      //  Check role match
       if (data.user.role !== form.role) {
         alert("Incorrect role selected");
         return;
       }
 
-      // 🔥 Save user
+      //  Save user
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // 🔥 Redirect
+      //  Redirect
       if (data.user.role === "donor") {
         navigate("/donor");
       } else if (data.user.role === "ngo") {
-        navigate("/ngo-dashboard");
+        navigate("/organisation-dashboard");
       } else {
         navigate("/admin-dashboard");
       }

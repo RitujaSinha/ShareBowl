@@ -6,7 +6,7 @@ import generateToken from "../utils/generateToken.js"
 
 export const login  = async (req,res) => {
     try {
-        const {email, password, role} = req.body;
+        const {role, email, password} = req.body;
 
         if(!email || !password || !role){
             return res.status(400).json({message:"All fields are required"})
@@ -22,7 +22,7 @@ export const login  = async (req,res) => {
 
             const isMatch = await bcrypt.compare(password,admin.password);
             if(!isMatch){
-                return res.status(401).json({message:"Wrong credentials"});
+                return res.status(401).json({message:"Wrong credntials"});
             }
             const token = generateToken(admin);
             return res.status(200).json({
