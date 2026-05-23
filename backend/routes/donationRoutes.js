@@ -3,7 +3,7 @@ import Donation from "../models/donormodels/Donation.js";
 
 const router = express.Router();
 
-// ➕ Add donation
+//  Add donation
 router.post("/", async (req, res) => {
   try {
     const donation = new Donation(req.body);
@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// 📦 Get all donations
+//  Get all donations
 router.get("/", async (req, res) => {
   try {
     const donations = await Donation.find();
@@ -28,7 +28,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ❌ Delete donation
+//  Delete donation
 router.delete("/:id", async (req, res) => {
     try {
       await Donation.findByIdAndDelete(req.params.id);
@@ -39,7 +39,7 @@ router.delete("/:id", async (req, res) => {
     }
   });
 
-  // 🔄 Update status
+  // Update status
 router.put("/:id", async (req, res) => {
     try {
       const updated = await Donation.findByIdAndUpdate(
