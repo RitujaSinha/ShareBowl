@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import connectDb from "./config/connectDB.js"
 import cors from "cors"
 import donationRoutes from "./routes/donationRoutes.js"
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(cors({
 app.use(express.json())
 
 app.use("/api/donations", donationRoutes);
+app.use("/api/users", userRoutes);
 
 const PORT = process.env.PORT || 5000
 
