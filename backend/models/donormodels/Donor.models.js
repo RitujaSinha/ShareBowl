@@ -27,10 +27,10 @@ const donorSchema = new Schema({
     },
 
     phone:{
-        type:Number,
-        immutable:true,
-        maxLength:10,
-        minLength:10,
+        type:String,
+        required:true,
+        minlength:10,
+        maxlength:10
     },
 
     street:{
@@ -62,10 +62,10 @@ const donorSchema = new Schema({
     },
 
     pincode:{
-        type:Number,
-        minLength:6,
-        maxLength:6,
-        required:true 
+        type:String,
+        required:true,
+        minlength:6,
+        maxlength:6
     },
 
 

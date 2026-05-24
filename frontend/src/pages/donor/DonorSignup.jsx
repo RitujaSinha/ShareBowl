@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function DonorSignup() {
+
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "",
+    donorName: "",
     email: "",
     phone: "",
     street: "",
@@ -17,96 +18,218 @@ export default function DonorSignup() {
     repassword: "",
   });
 
-  // 🔥 Handle input
+  // Handle Input
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.id]: e.target.value });
+
+    setForm({
+      ...form,
+      [e.target.id]: e.target.value,
+    });
   };
 
-  // 🚀 Submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Handle Submit
+  const handleSubmit = async () => {
 
+    // password validation
     if (form.password !== form.repassword) {
+
       alert("Passwords do not match");
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          phone: form.phone,
-          password: form.password,
-          role: "donor",
-          address: {
-            street: form.street,
-            city: form.city,
-            district: form.district,
-            state: form.state,
-            pincode: form.pincode,
+
+      const res = await fetch(
+        "http://localhost:8000/api/auth/signup/donor",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
           },
-        }),
-      });
+
+          body: JSON.stringify({
+
+            donorName: form.donorName,
+
+            email: form.email,
+
+            phone: form.phone,
+
+            street: form.street,
+
+            city: form.city,
+
+            district: form.district,
+
+            state: form.state,
+
+            pincode: form.pincode,
+
+            password: form.password,
+          }),
+        }
+      );
 
       const data = await res.json();
 
-      alert(data.message || "Signup successful 🎉");
+      console.log(data);
 
-      // 🔥 Redirect to login
-      navigate("/login");
+      // success
+      if (res.ok) {
+
+        alert(data.message);
+
+        navigate("/login");
+      }
+
+      // backend error
+      else {
+
+        alert(data.message);
+      }
 
     } catch (error) {
-      console.error(error);
+
+      console.log(error);
+
       alert("Signup failed");
     }
   };
 
   return (
+
     <div className='min-h-screen bg-black px-6 py-10 text-white'>
 
+      {/* Heading */}
       <p className='mx-auto mb-10 max-w-3xl text-center text-lg text-zinc-300'>
-        Register to be Donor
+        Register to become a donor and help reduce food waste.
       </p>
 
+      {/* Form Container */}
       <div className='mx-auto max-w-4xl rounded-3xl border border-zinc-800 bg-zinc-900 p-10'>
 
-        <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
+        <form
 
-          <legend className='mb-6 text-4xl font-bold text-yellow-400'>
+          onSubmit={(e) => {
+
+            e.preventDefault();
+
+            handleSubmit();
+          }}
+
+          className='grid gap-6 md:grid-cols-2'
+        >
+
+          {/* Title */}
+          <legend className='col-span-2 mb-4 text-4xl font-bold text-yellow-400'>
             Create Account
           </legend>
 
-          {/* Name */}
-          <input id="name" placeholder="Name" onChange={handleChange} className="input" />
+          {/* Donor Name */}
+          <input
+            id="donorName"
+            type="text"
+            required
+            placeholder="Enter donor name"
+            onChange={handleChange}
+            className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
+          />
 
           {/* Email */}
-          <input id="email" type="email" placeholder="Email" onChange={handleChange} className="input" />
+          <input
+            id="email"
+            type="email"
+            required
+            placeholder="Enter email"
+            onChange={handleChange}
+            className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
+          />
 
           {/* Phone */}
-          <input id="phone" placeholder="Phone" onChange={handleChange} className="input" />
+          <input
+            id="phone"
+            type="text"
+            required
+            placeholder="Enter phone number"
+            onChange={handleChange}
+            className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
+          />
 
-          {/* Address */}
-          <input id="street" placeholder="Street" onChange={handleChange} className="input" />
-          <input id="city" placeholder="City" onChange={handleChange} className="input" />
-          <input id="district" placeholder="District" onChange={handleChange} className="input" />
-          <input id="state" placeholder="State" onChange={handleChange} className="input" />
-          <input id="pincode" placeholder="Pincode" onChange={handleChange} className="input" />
+          {/* Street */}
+          <input
+            id="street"
+            type="text"
+            required
+            placeholder="Enter street"
+            onChange={handleChange}
+            className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
+          />
+
+          {/* City */}
+          <input
+            id="city"
+            type="text"
+            required
+            placeholder="Enter city"
+            onChange={handleChange}
+            className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
+          />
+
+          {/* District */}
+          <input
+            id="district"
+            type="text"
+            required
+            placeholder="Enter district"
+            onChange={handleChange}
+            className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
+          />
+
+          {/* State */}
+          <input
+            id="state"
+            type="text"
+            required
+            placeholder="Enter state"
+            onChange={handleChange}
+            className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
+          />
+
+          {/* Pincode */}
+          <input
+            id="pincode"
+            type="text"
+            required
+            placeholder="Enter pincode"
+            onChange={handleChange}
+            className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
+          />
 
           {/* Password */}
-          <input id="password" type="password" placeholder="Password" onChange={handleChange} className="input" />
+          <input
+            id="password"
+            type="password"
+            required
+            placeholder="Enter password"
+            onChange={handleChange}
+            className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
+          />
 
           {/* Confirm Password */}
-          <input id="repassword" type="password" placeholder="Confirm Password" onChange={handleChange} className="input" />
+          <input
+            id="repassword"
+            type="password"
+            required
+            placeholder="Confirm password"
+            onChange={handleChange}
+            className='rounded-xl border border-zinc-700 bg-black p-4 outline-none focus:border-yellow-400'
+          />
 
           {/* Button */}
           <button
             type="submit"
-            className="mt-6 rounded-xl bg-yellow-400 py-4 text-xl font-bold text-black hover:bg-yellow-300"
+            className='col-span-2 mt-4 rounded-xl bg-yellow-400 py-4 text-xl font-bold text-black transition duration-300 hover:bg-yellow-300 hover:shadow-[0_0_20px_rgba(250,204,21,0.8)]'
           >
             Sign Up
           </button>

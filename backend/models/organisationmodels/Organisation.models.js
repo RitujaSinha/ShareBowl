@@ -1,7 +1,8 @@
-import mongoose from "mongoose"
-import { Schema } from "mongoose"
+import mongoose from "mongoose";
+import { Schema } from "mongoose";
 
 const organisationSchema = new Schema({
+
     organisationName:{
         type:String,
         required:true,
@@ -32,22 +33,25 @@ const organisationSchema = new Schema({
         required:true,
         unique:true,
         lowercase:true,
+        trim:true
     },
 
     isEmailVerified:{
-        type: Boolean,
-        default: false
+        type:Boolean,
+        default:false
     },
-    isAdminVerified: {
-        type: Boolean,
-        default: false
+
+    isAdminVerified:{
+        type:Boolean,
+        default:false
     },
 
     phone:{
-        type:Number,
-        immutable:true,
-        maxLength:10,
-        minLength:10,
+        type:String,
+        required:true,
+        minlength:10,
+        maxlength:10,
+        trim:true
     },
 
     street:{
@@ -79,19 +83,23 @@ const organisationSchema = new Schema({
     },
 
     pincode:{
-        type:Number,
-        minLength:6,
-        maxLength:6,
-        required:true 
+        type:String,
+        required:true,
+        minlength:6,
+        maxlength:6,
+        trim:true
     },
 
-
-    password: {
+    password:{
         type:String,
         required:true
     },
 
-},{timestamps:true})
+},{
+    timestamps:true
+});
 
-const Organisation = mongoose.model("Organisation",organisationSchema);
+const Organisation =
+mongoose.model("Organisation", organisationSchema);
+
 export default Organisation;

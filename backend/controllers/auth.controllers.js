@@ -21,6 +21,7 @@ export const login  = async (req,res) => {
             }
 
             const isMatch = await bcrypt.compare(password,admin.password);
+            // console.log(admin.password, password)
             if(!isMatch){
                 return res.status(401).json({message:"Wrong credntials"});
             }
