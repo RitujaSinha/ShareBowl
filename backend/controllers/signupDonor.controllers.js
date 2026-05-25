@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt";
-
 import Donor from "../models/donormodels/Donor.models.js";
 import generateToken from "../utils/generateToken.js"; 
 

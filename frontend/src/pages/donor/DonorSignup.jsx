@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 export default function DonorSignup() {
@@ -33,7 +34,7 @@ export default function DonorSignup() {
     // password validation
     if (form.password !== form.repassword) {
 
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -78,7 +79,7 @@ export default function DonorSignup() {
       // success
       if (res.ok) {
 
-        alert(data.message);
+        toast.success(data.message);
 
         navigate("/login");
       }
@@ -86,14 +87,14 @@ export default function DonorSignup() {
       // backend error
       else {
 
-        alert(data.message);
+        toast.error(data.message);
       }
 
     } catch (error) {
 
       console.log(error);
 
-      alert("Signup failed");
+      toast.error("Signup failed");
     }
   };
 

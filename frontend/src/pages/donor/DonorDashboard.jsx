@@ -46,7 +46,7 @@ function DonorDashboard() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
 
-      {/* 🔝 Header */}
+      {/*  Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold">Welcome back 👋</h1>

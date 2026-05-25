@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 function AddDonation() {
@@ -19,7 +20,7 @@ function AddDonation() {
   // 📍 Get Location
   const getLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation not supported");
+      toast.error("Geolocation not supported");
       return;
     }
 
@@ -34,22 +35,22 @@ function AddDonation() {
       },
       (err) => {
         console.log(err);
-        alert("Location access denied");
+        toast.error("Location access denied");
       }
     );
   };
 
-  // 🚀 Submit
+  //  Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.type || !form.quantity) {
-      alert("Please fill required fields");
+      toast.error("Please fill required fields");
       return;
     }
 
     if (!location) {
-      alert("Please add location");
+      toast.error("Please add location");
       return;
     }
 
@@ -77,16 +78,16 @@ function AddDonation() {
       const result = await res.json();
 
       if (!res.ok) {
-        alert(result.message || "Error adding donation");
+        toast.error(result.message || "Error adding donation");
         return;
       }
 
-      alert("Donation added successfully ✅");
+      toast.success("Donation added successfully ✅");
 
       navigate("/my-donations");
     } catch (error) {
       console.error(error);
-      alert("Something went wrong");
+      toast.error("Something went wrong");
     }
   };
 
@@ -192,7 +193,7 @@ function AddDonation() {
             📍 Get Location
           </button>
 
-          {/* ✅ SHOW LOCATION */}
+          {/*  SHOW LOCATION */}
           {location && (
             <p className="text-sm text-green-600">
               📍 Location Added: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -28,7 +29,7 @@ export default function Login() {
     // role validation
     if (!form.role) {
 
-      alert("Please select a role");
+      toast.error("Please select a role");
       return;
     }
 
@@ -58,7 +59,7 @@ export default function Login() {
       // backend error
       if (!res.ok) {
 
-        alert(data.message);
+        toast.error(data.message);
         return;
       }
 
@@ -88,7 +89,7 @@ export default function Login() {
 
       console.log(error);
 
-      alert("Login failed");
+      toast.error("Login failed");
     }
   };
 
@@ -193,7 +194,7 @@ export default function Login() {
           {/* Button */}
           <button
             type="submit"
-            className='mt-8 w-full rounded-xl bg-indigo-600 py-4 text-xl font-semibold text-white transition duration-300 hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.8)]'
+            className='mt-8 w-full rounded-xl bg-indigo-600 cursor-pointer py-4 text-xl font-semibold text-white transition duration-300 hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.8)]'
           >
             Login
           </button>

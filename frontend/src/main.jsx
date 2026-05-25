@@ -1,5 +1,6 @@
 import './index.css'
 import { createRoot } from 'react-dom/client'
+import {Toaster} from "react-hot-toast"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Home from './pages/Home.jsx'
 import Signup from './pages/Signup.jsx'
@@ -13,6 +14,9 @@ import MyDonations from "./pages/donor/MyDonations";
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
+    {/* toaster notifiaction  */}
+      <Toaster position="top-center" />
+
     <Routes>
 
       <Route  path="/" element={<Home/>} />

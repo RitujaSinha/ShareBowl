@@ -1,5 +1,5 @@
-import express from "express"
 import dotenv from "dotenv"
+import express from "express"
 import connectDb from "./config/connectDB.js"
 import cors from "cors"
 // import donationRoutes from "./routes/donationRoutes.js"
@@ -19,9 +19,7 @@ app.use(express.json())
 // app.use("/api/donations", donationRoutes);
 app.use("/api/auth", authRoutes);
 
-
-
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 8000
 
 app.listen(PORT, ()=> {
     try {
