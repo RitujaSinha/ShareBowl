@@ -4,27 +4,38 @@ import { useNavigate } from "react-router-dom";
 function AddDonation() {
   const navigate = useNavigate();
 
-  const [category, setCategory] = useState("Food"); // 🔥 NEW
+  const [category, setCategory] = useState("Food");
+
   const [form, setForm] = useState({
     type: "",
     quantity: "",
     description: "",
-    expiry: "", // for food
-    brand: "", // for grocery
+    expiry: "",
+    brand: "",
   });
 
   const [location, setLocation] = useState(null);
 
-  // 📍 Location
+  // 📍 Get Location
   const getLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setLocation({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        });
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        console.log("Location:", lat, lng);
+
+        setLocation({ lat, lng });
       },
-      () => alert("Location access denied")
+      (err) => {
+        console.log(err);
+        alert("Location access denied");
+      }
     );
   };
 
@@ -49,17 +60,33 @@ function AddDonation() {
     };
 
     try {
-      await fetch("http://localhost:5000/api/donations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const token = localStorage.getItem("token");
 
-      navigate("/my-donations"); // 🔥 redirect
+      const res = await fetch(
+        "http://localhost:5000/api/auth/donation",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, 
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        alert(result.message || "Error adding donation");
+        return;
+      }
+
+      alert("Donation added successfully ✅");
+
+      navigate("/my-donations");
     } catch (error) {
       console.error(error);
+      alert("Something went wrong");
     }
   };
 
@@ -71,9 +98,10 @@ function AddDonation() {
           Add Donation
         </h1>
 
-        {/* 🔥 CATEGORY SWITCH */}
+        {/* CATEGORY SWITCH */}
         <div className="flex gap-3 mb-6">
           <button
+            type="button"
             onClick={() => setCategory("Food")}
             className={`flex-1 p-2 rounded ${
               category === "Food"
@@ -85,6 +113,7 @@ function AddDonation() {
           </button>
 
           <button
+            type="button"
             onClick={() => setCategory("Grocery")}
             className={`flex-1 p-2 rounded ${
               category === "Grocery"
@@ -98,7 +127,7 @@ function AddDonation() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
-          {/* Common Fields */}
+          {/* Type */}
           <input
             type="text"
             placeholder={
@@ -112,6 +141,7 @@ function AddDonation() {
             }
           />
 
+          {/* Quantity */}
           <input
             type="text"
             placeholder="Quantity"
@@ -121,7 +151,7 @@ function AddDonation() {
             }
           />
 
-          {/* 🔥 FOOD EXTRA FIELD */}
+          {/* Food Field */}
           {category === "Food" && (
             <input
               type="date"
@@ -132,7 +162,7 @@ function AddDonation() {
             />
           )}
 
-          {/* 🔥 GROCERY EXTRA FIELD */}
+          {/* Grocery Field */}
           {category === "Grocery" && (
             <input
               type="text"
@@ -144,6 +174,7 @@ function AddDonation() {
             />
           )}
 
+          {/* Description */}
           <textarea
             placeholder="Description"
             className="w-full p-3 border rounded-lg"
@@ -152,7 +183,7 @@ function AddDonation() {
             }
           />
 
-          {/* Location */}
+          {/* 📍 Location Button */}
           <button
             type="button"
             onClick={getLocation}
@@ -160,6 +191,13 @@ function AddDonation() {
           >
             📍 Get Location
           </button>
+
+          {/* ✅ SHOW LOCATION */}
+          {location && (
+            <p className="text-sm text-green-600">
+              📍 Location Added: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+            </p>
+          )}
 
           {/* Submit */}
           <button

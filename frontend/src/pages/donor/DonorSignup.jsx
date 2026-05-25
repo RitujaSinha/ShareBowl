@@ -40,7 +40,7 @@ export default function DonorSignup() {
     try {
 
       const res = await fetch(
-        "http://localhost:8000/api/auth/signup/donor",
+        "http://localhost:5000/api/auth/signup/donor",
         {
           method: "POST",
 
