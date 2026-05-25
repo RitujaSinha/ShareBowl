@@ -1,4 +1,7 @@
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export default function generateToken(user){
     return jwt.sign({

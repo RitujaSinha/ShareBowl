@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 
-import Donor
-from "../models/donormodels/Donor.models.js";
+import Donor from "../models/donormodels/Donor.models.js";
+import generateToken from "../utils/generateToken.js"; 
 
 export const signupDonor = async (req, res) => {
 

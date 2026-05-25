@@ -23,7 +23,7 @@ export const login  = async (req,res) => {
             const isMatch = await bcrypt.compare(password,admin.password);
             // console.log(admin.password, password)
             if(!isMatch){
-                return res.status(401).json({message:"Wrong credntials"});
+                return res.status(401).json({message:"Wrong credentials"});
             }
             const token = generateToken(admin);
             return res.status(200).json({
@@ -79,17 +79,19 @@ export const login  = async (req,res) => {
 
             const isMatch = await bcrypt.compare(password,organisation.password);
             if(!isMatch){
-                return res.status(404).json({message:"Wrong credentials"});
+                return res.status(401).json({message:"Wrong credentials"});
             }
 
             const token = generateToken(organisation);
             return res.status(200).json({
-                message: "Login Successfull",
+                message: "Login successful",
                 token,
-                id: organisation._id,
-                email:organisation.email,
-                role:organisation.role
-            })
+                user: {
+                    id: organisation._id,
+                    email: organisation.email,
+                    role: organisation.role
+                }
+            });
         }
 
 

@@ -5,12 +5,21 @@ function MyDonations() {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
 
-  // 🚀 Fetch data
   const fetchDonations = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/donations");
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://localhost:5000/api/auth/my-donations",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       const data = await res.json();
-      setDonations(data);
+      setDonations(data.donations);
     } catch (error) {
       console.error("Error fetching donations:", error);
     }
@@ -20,12 +29,19 @@ function MyDonations() {
     fetchDonations();
   }, []);
 
-  // ❌ Delete
   const handleDelete = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/donations/${id}`, {
-        method: "DELETE",
-      });
+      const token = localStorage.getItem("token");
+
+      await fetch(
+        `http://localhost:5000/api/auth/donation/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setDonations(donations.filter((d) => d._id !== id));
     } catch (error) {
@@ -33,26 +49,6 @@ function MyDonations() {
     }
   };
 
-  // 🔄 Accept
-  const handleAccept = async (id) => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/donations/${id}`, {
-        method: "PUT",
-      });
-
-      const updated = await res.json();
-
-      setDonations(
-        donations.map((d) =>
-          d._id === id ? updated : d
-        )
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // 🔥 FILTER + SEARCH
   const filteredDonations = donations
     .filter((d) =>
       filter === "All" ? true : d.status === filter
@@ -63,7 +59,6 @@ function MyDonations() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-
       <h1 className="text-2xl font-bold mb-6">My Donations</h1>
 
       {/* 🔍 SEARCH */}
@@ -109,12 +104,11 @@ function MyDonations() {
         </button>
       </div>
 
-      {/* 🧾 LIST */}
+      {/*  LIST */}
       {filteredDonations.length === 0 ? (
         <p className="text-gray-500">No donations found 🚫</p>
       ) : (
         <div className="space-y-4">
-
           {filteredDonations.map((d) => (
             <div
               key={d._id}
@@ -125,19 +119,19 @@ function MyDonations() {
               <p className="text-gray-700">Quantity: {d.quantity}</p>
               <p className="text-gray-600">Description: {d.description}</p>
 
-              {/* 📅 DATE */}
+              {/* DATE */}
               <p className="text-sm text-gray-400 mt-1">
                 📅 {new Date(d.createdAt).toLocaleString()}
               </p>
 
-              {/* 📍 LOCATION */}
+              {/* LOCATION */}
               {d.location && (
                 <p className="text-sm text-gray-500 mt-1">
                   📍 {d.location.lat.toFixed(2)}, {d.location.lng.toFixed(2)}
                 </p>
               )}
 
-              {/* 🌍 MAP LINK */}
+              {/* MAP LINK */}
               {d.location && (
                 <a
                   href={`https://www.google.com/maps?q=${d.location.lat},${d.location.lng}`}
@@ -154,7 +148,9 @@ function MyDonations() {
                 className={`mt-2 font-medium ${
                   d.status === "Pending"
                     ? "text-yellow-500"
-                    : "text-green-600"
+                    : d.status === "Accepted"
+                    ? "text-green-600"
+                    : "text-gray-500"
                 }`}
               >
                 Status: {d.status}
@@ -162,31 +158,17 @@ function MyDonations() {
 
               {/* ACTION BUTTONS */}
               <div className="flex gap-3 mt-4">
-
-                {d.status === "Pending" && (
-                  <button
-                    onClick={() => handleAccept(d._id)}
-                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                  >
-                    Accept
-                  </button>
-                )}
-
                 <button
                   onClick={() => handleDelete(d._id)}
                   className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                 >
                   Delete
                 </button>
-
               </div>
-
             </div>
           ))}
-
         </div>
       )}
-
     </div>
   );
 }
