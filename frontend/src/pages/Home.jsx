@@ -1,16 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import hungryChild from "../assets/Hungry-child.jpg";
+import Navbar from '../components/Navbar.jsx'
 
 
 export default function Home() {
   return (
     <div className='bg-black min-h-screen w-screen text-black bg-cover' style={{backgroundImage: `url(${hungryChild})`}}>
-      <div className='p-2 text-2xl'>
-        <Link
-            className='w-[120px] h-[35px] text-center rounded-sm px-10 font-serif   text-3xl font-bold text-yellow-400 text-shadow-gray-950'
-          to="/">SHAREBOWL🥣
-        </Link>
+      <div className='text-2xl'>
+       < Navbar/>
       </div>
 
       <div className='flex flex-col items-center justify-center h-[80vh] text-center gap-6 px-4'>

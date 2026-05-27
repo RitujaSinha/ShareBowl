@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 export default function Login() {
 
@@ -92,10 +93,11 @@ export default function Login() {
 
   return (
 
-    <div className='flex min-h-screen items-center justify-center bg-black px-6 py-10'>
-
+    <div className='min-h-screen bg-black'>
+    <Navbar/>
       {/* Card */}
-      <div className='w-full max-w-md rounded-3xl border border-indigo-900 bg-zinc-900 p-10 shadow-[0_0_25px_rgba(99,102,241,0.2)]'>
+      <div className="flex items-center justify-center px-6 py-10">
+            <div className='w-full max-w-md rounded-3xl border border-indigo-900 bg-zinc-900 p-10 shadow-[0_0_25px_rgba(99,102,241,0.2)]'>
 
         {/* Heading */}
         <h1 className='mb-2 text-center text-5xl font-bold text-indigo-500'>
@@ -198,6 +200,7 @@ export default function Login() {
 
         </form>
 
+      </div>
       </div>
     </div>
   );

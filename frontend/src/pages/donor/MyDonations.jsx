@@ -1,170 +1,359 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 function MyDonations() {
-  const [donations, setDonations] = useState([]);
-  const [filter, setFilter] = useState("All");
-  const [search, setSearch] = useState("");
 
+  const [donations, setDonations] =
+    useState([]);
+
+  const [filter, setFilter] =
+    useState("All");
+
+  const [search, setSearch] =
+    useState("");
+
+  // Fetch Donations
   const fetchDonations = async () => {
+
     try {
-      const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "http://localhost:5000/api/auth/my-donations",
+
+        "http://localhost:5000/api/donation/my-donations",
+
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          method: "GET",
+          credentials: "include",
         }
       );
 
       const data = await res.json();
+
+      if (!res.ok) {
+
+        toast.error(
+          data.message ||
+          "Failed to fetch donations"
+        );
+
+        return;
+      }
+
       setDonations(data.donations);
+
     } catch (error) {
-      console.error("Error fetching donations:", error);
+
+      console.log(error);
+
+      toast.error("Something went wrong");
     }
   };
 
   useEffect(() => {
+
     fetchDonations();
+
   }, []);
 
+  // Delete Donation
   const handleDelete = async (id) => {
-    try {
-      const token = localStorage.getItem("token");
 
-      await fetch(
-        `http://localhost:5000/api/auth/donation/${id}`,
+    try {
+
+      const res = await fetch(
+
+        `http://localhost:5000/api/donation/delete/${id}`,
+
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: "include",
         }
       );
 
-      setDonations(donations.filter((d) => d._id !== id));
+      const data = await res.json();
+
+      if (!res.ok) {
+
+        toast.error(
+          data.message ||
+          "Failed to delete donation"
+        );
+
+        return;
+      }
+
+      setDonations(
+
+        donations.filter(
+          (d) => d._id !== id
+        )
+      );
+
+      toast.success(
+        "Donation deleted"
+      );
+
     } catch (error) {
-      console.error(error);
+
+      console.log(error);
+
+      toast.error("Something went wrong");
     }
   };
 
-  const filteredDonations = donations
-    .filter((d) =>
-      filter === "All" ? true : d.status === filter
-    )
-    .filter((d) =>
-      d.type.toLowerCase().includes(search.toLowerCase())
-    );
+  // Filter + Search
+  const filteredDonations =
+    donations
+
+      .filter((d) =>
+
+        filter === "All"
+          ? true
+          : d.status === filter
+      )
+
+      .filter((d) =>
+
+        d.foodType
+          ?.toLowerCase()
+          .includes(
+            search.toLowerCase()
+          )
+      );
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-2xl font-bold mb-6">My Donations</h1>
 
-      {/* 🔍 SEARCH */}
+    <div className="min-h-screen bg-black p-6 text-white">
+
+      {/* Heading */}
+      <h1 className="mb-6 text-4xl font-bold text-indigo-500">
+
+        My Donations
+
+      </h1>
+
+      {/* Search */}
       <input
         type="text"
         placeholder="Search by food type..."
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full p-2 mb-4 border rounded-lg"
+        onChange={(e) =>
+          setSearch(e.target.value)
+        }
+        className="mb-4 w-full rounded-xl border border-zinc-700 bg-zinc-900 p-3 outline-none focus:border-indigo-500"
       />
 
-      {/* 🔥 FILTER BUTTONS */}
-      <div className="flex gap-3 mb-6">
+      {/* Filter Buttons */}
+      <div className="mb-6 flex gap-3">
+
         <button
           onClick={() => setFilter("All")}
-          className={`px-4 py-1 rounded ${
-            filter === "All" ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-xl px-4 py-2 font-medium transition ${
+            filter === "All"
+              ? "bg-indigo-600"
+              : "bg-zinc-800"
           }`}
         >
+
           All
+
         </button>
 
         <button
-          onClick={() => setFilter("Pending")}
-          className={`px-4 py-1 rounded ${
+          onClick={() =>
+            setFilter("Pending")
+          }
+          className={`rounded-xl px-4 py-2 font-medium transition ${
             filter === "Pending"
-              ? "bg-yellow-500 text-white"
-              : "bg-gray-200"
+              ? "bg-yellow-500 text-black"
+              : "bg-zinc-800"
           }`}
         >
+
           Pending
+
         </button>
 
         <button
-          onClick={() => setFilter("Accepted")}
-          className={`px-4 py-1 rounded ${
+          onClick={() =>
+            setFilter("Accepted")
+          }
+          className={`rounded-xl px-4 py-2 font-medium transition ${
             filter === "Accepted"
-              ? "bg-green-500 text-white"
-              : "bg-gray-200"
+              ? "bg-green-600"
+              : "bg-zinc-800"
           }`}
         >
+
           Accepted
+
         </button>
+
       </div>
 
-      {/*  LIST */}
+      {/* Donation List */}
       {filteredDonations.length === 0 ? (
-        <p className="text-gray-500">No donations found 🚫</p>
+
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 text-center text-zinc-400">
+
+          No donations found 🚫
+
+        </div>
+
       ) : (
-        <div className="space-y-4">
+
+        <div className="space-y-5">
+
           {filteredDonations.map((d) => (
+
             <div
               key={d._id}
-              className="bg-white p-5 rounded-xl shadow hover:shadow-md transition"
+              className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6 shadow-lg"
             >
-              <h2 className="text-lg font-semibold">{d.type}</h2>
 
-              <p className="text-gray-700">Quantity: {d.quantity}</p>
-              <p className="text-gray-600">Description: {d.description}</p>
+              {/* Top */}
+              <div className="flex items-center justify-between">
 
-              {/* DATE */}
-              <p className="text-sm text-gray-400 mt-1">
-                📅 {new Date(d.createdAt).toLocaleString()}
+                <div>
+
+                  <h2 className="text-2xl font-bold">
+
+                    {d.foodType}
+
+                  </h2>
+
+                  <p className="mt-1 text-zinc-400">
+
+                    {d.category}
+
+                  </p>
+
+                </div>
+
+                <span
+                  className={`rounded-full px-4 py-2 text-sm font-semibold ${
+                    d.status === "Pending"
+                      ? "bg-yellow-500/20 text-yellow-400"
+                      : d.status === "Accepted"
+                      ? "bg-green-500/20 text-green-400"
+                      : "bg-zinc-700 text-zinc-300"
+                  }`}
+                >
+
+                  {d.status}
+
+                </span>
+
+              </div>
+
+              {/* Organisation */}
+              <p className="mt-4 text-zinc-300">
+
+                <span className="font-semibold">
+
+                  Organisation:
+
+                </span>{" "}
+
+                {d.organisation
+                  ?.organisationName}
+
               </p>
 
-              {/* LOCATION */}
-              {d.location && (
-                <p className="text-sm text-gray-500 mt-1">
-                  📍 {d.location.lat.toFixed(2)}, {d.location.lng.toFixed(2)}
+              {/* Quantity */}
+              <p className="mt-2 text-zinc-300">
+
+                <span className="font-semibold">
+
+                  Quantity:
+
+                </span>{" "}
+
+                {d.quantity}
+
+              </p>
+
+              {/* Description */}
+              {d.description && (
+
+                <p className="mt-2 text-zinc-400">
+
+                  {d.description}
+
                 </p>
               )}
 
-              {/* MAP LINK */}
-              {d.location && (
-                <a
-                  href={`https://www.google.com/maps?q=${d.location.lat},${d.location.lng}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 text-sm underline"
-                >
-                  View on Map
-                </a>
+              {/* Expiry */}
+              {d.expiry && (
+
+                <p className="mt-2 text-zinc-400">
+
+                  📅 Expiry:
+                  {" "}
+
+                  {new Date(
+                    d.expiry
+                  ).toLocaleDateString()}
+
+                </p>
               )}
 
-              {/* STATUS */}
-              <p
-                className={`mt-2 font-medium ${
-                  d.status === "Pending"
-                    ? "text-yellow-500"
-                    : d.status === "Accepted"
-                    ? "text-green-600"
-                    : "text-gray-500"
-                }`}
-              >
-                Status: {d.status}
+              {/* Brand */}
+              {d.brand && (
+
+                <p className="mt-2 text-zinc-400">
+
+                  🏷️ Brand:
+                  {" "}
+                  {d.brand}
+
+                </p>
+              )}
+
+              {/* Location */}
+              {d.location && (
+
+                <p className="mt-2 text-zinc-400">
+
+                  📍
+                  {" "}
+
+                  {d.location.lat.toFixed(4)}
+                  ,
+                  {" "}
+                  {d.location.lng.toFixed(4)}
+
+                </p>
+              )}
+
+              {/* Date */}
+              <p className="mt-2 text-sm text-zinc-500">
+
+                Created:
+                {" "}
+
+                {new Date(
+                  d.createdAt
+                ).toLocaleString()}
+
               </p>
 
-              {/* ACTION BUTTONS */}
-              <div className="flex gap-3 mt-4">
+              {/* Buttons */}
+              <div className="mt-5 flex gap-3">
+
                 <button
-                  onClick={() => handleDelete(d._id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                  onClick={() =>
+                    handleDelete(d._id)
+                  }
+                  className="rounded-xl bg-red-600 px-4 py-2 font-semibold transition hover:bg-red-500"
                 >
+
                   Delete
+
                 </button>
+
               </div>
+
             </div>
           ))}
         </div>

@@ -108,7 +108,9 @@ export default function OrganisationDashboard() {
               Recent Donations
             </h3>
 
-            <button className="rounded-xl bg-indigo-600 px-5 py-3 font-semibold transition hover:bg-indigo-500">
+            <button className="rounded-xl bg-indigo-600 px-5 py-3 font-semibold transition hover:bg-indigo-500"
+            onClick={() => navigate("/AllDonation.jsx")}
+            >
 
               View All
             </button>
