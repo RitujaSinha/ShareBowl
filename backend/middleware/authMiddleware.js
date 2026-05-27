@@ -1,24 +1,39 @@
-
 import jwt from "jsonwebtoken";
 
-export const protect = (req, res, next) => {
+export const protect = (req,res,next) => {
   try {
-    const token = req.cookies.token
 
+    // Get token from cookies
+    const token =
+      req.cookies?.token;
+    // console.log(token)
+    // No token
     if (!token) {
+
       return res.status(401).json({
+        success: false,
         message: "Not authorized",
+
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify token
+    const decoded = jwt.verify(token,process.env.JWT_SECRET);
 
-    req.user = decoded; // { userId, role }
+    // Save user data in req.user
+    req.user = {userId: decoded.userId, role: decoded.role,};
 
     next();
+
   } catch (error) {
+
+    console.log(error);
+
     return res.status(401).json({
+
+      success: false,
       message: "Invalid token",
+
     });
   }
 };

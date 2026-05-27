@@ -1,49 +1,107 @@
 import Donation from "../models/donormodels/Donation.js";
 
-export const addDonation = async (req, res) => {
-  try {
-    const { type, quantity, description, location } = req.body;
+export const addDonation =
+async (req, res) => {
 
-    if (!type || !quantity) {
+  try {
+
+    const {
+
+      organisation,
+      foodType,
+      quantity,
+      description,
+      expiry,
+      brand,
+      category,
+      location,
+
+    } = req.body;
+
+    // Validation
+    if (
+      !organisation ||
+      !foodType ||
+      !quantity
+    ) {
+
       return res.status(400).json({
-        message: "Type and quantity are required",
+
+        message:
+          "Organisation, food type and quantity are required",
+
       });
     }
 
-    const donation = await Donation.create({
-      donor: req.user.userId,
-      type,
+    // Create Donation
+    const donation =
+    await Donation.create({
+
+      donor:
+        req.user.userId,
+
+      organisation,
+
+      foodType,
+
       quantity,
+
       description,
+
+      expiry,
+
+      brand,
+
+      category,
+
       location,
+
     });
 
     return res.status(201).json({
-      message: "Donation added successfully",
+
+      message:
+        "Donation added successfully",
+
       donation,
+
     });
 
   } catch (error) {
+
     console.log(error);
+
     return res.status(500).json({
+
       message: "Server error",
+
     });
   }
 };
 
 export const getMyDonations = async (req, res) => {
   try {
-    const donations = await Donation.find({
-      donor: req.user.userId,
-    }).sort({ createdAt: -1 });
+    const donations = await Donation.find({donor: req.user.userId,})
+      .populate(
+        "organisation",
+        "organisationName"
+      )
+
+      .sort({
+        createdAt: -1,
+      });
 
     return res.status(200).json({
+      success: true,
       donations,
     });
 
   } catch (error) {
+
     console.log(error);
+
     return res.status(500).json({
+      success: false,
       message: "Server error",
     });
   }
