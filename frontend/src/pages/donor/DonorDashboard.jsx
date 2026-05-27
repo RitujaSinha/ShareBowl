@@ -7,7 +7,7 @@ function DonorDashboard() {
 
   const [donations, setDonations] = useState([]);
 
-  // 🔐 Protect route
+  //  Protect route
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -16,7 +16,7 @@ function DonorDashboard() {
     }
   }, []);
 
-  // 🚀 Fetch donations
+  //  Fetch donations
   const fetchDonations = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/donations");
@@ -27,20 +27,37 @@ function DonorDashboard() {
     }
   };
 
-  // 🔄 Auto refresh
+  //  Auto refresh
   useEffect(() => {
     fetchDonations();
   }, [location]);
 
-  // 📊 Stats
+  // Stats
   const total = donations.length;
   const accepted = donations.filter(d => d.status === "Accepted").length;
   const pending = donations.filter(d => d.status === "Pending").length;
 
-  // 🚪 Logout
-  const handleLogout = () => {
+  // Logout
+  const handleLogout = async () => {
+
+  try {
+
+    await fetch(
+      "http://localhost:5000/api/auth/logout",
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+
     localStorage.removeItem("user");
+
     navigate("/login");
+
+   } catch (error) {
+
+    console.log(error);
+   }
   };
 
   return (
@@ -63,7 +80,7 @@ function DonorDashboard() {
         </button>
       </div>
 
-      {/* 📊 Stats */}
+      {/*  Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
 
         <div className="bg-white p-5 rounded-xl shadow border">
@@ -87,7 +104,7 @@ function DonorDashboard() {
 
       </div>
 
-      {/* 🚀 Actions */}
+      {/*  Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
 
         <div
@@ -95,7 +112,7 @@ function DonorDashboard() {
           className="bg-white p-6 rounded-xl shadow border cursor-pointer hover:shadow-lg hover:scale-105 transition"
         >
           <h2 className="text-xl font-semibold mb-2">
-            ➕ Add Donation
+             Add Donation
           </h2>
           <p className="text-gray-500">
             Donate food or groceries easily

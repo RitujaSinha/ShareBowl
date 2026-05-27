@@ -10,6 +10,7 @@ import DonorSignup from './pages/donor/DonorSignup.jsx'
 import DonorDashboard from './pages/donor/DonorDashboard'
 import AddDonation from './pages/donor/AddDonation'
 import MyDonations from "./pages/donor/MyDonations";
+import OrganisationDashboard from './pages/organisation/OrganisationDashboard.jsx'
 
 
 createRoot(document.getElementById('root')).render(

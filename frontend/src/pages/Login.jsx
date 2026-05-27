@@ -39,7 +39,7 @@ export default function Login() {
         "http://localhost:5000/api/auth/login",
         {
           method: "POST",
-
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -65,9 +65,6 @@ export default function Login() {
 
       // save user
       localStorage.setItem("user", JSON.stringify(data));
-
-      // save token
-      localStorage.setItem("token", data.token);
 
       // redirect
       if (data.role === "donor") {

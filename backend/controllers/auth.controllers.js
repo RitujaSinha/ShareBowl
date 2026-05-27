@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+
 import Donor from "../models/donormodels/Donor.models.js"
 import Organisation from "../models/organisationmodels/Organisation.models.js"
 import Admin from "../models/admin.models.js"
@@ -26,9 +27,11 @@ export const login  = async (req,res) => {
                 return res.status(401).json({message:"Wrong credentials"});
             }
             const token = generateToken(admin);
+
+            res.cookie("token", token, {httpOnly: true,secure: false,sameSite: "lax",maxAge: 7 * 24 * 60 * 60 * 1000,});
+
             return res.status(200).json({
                 message: "Login Successfull",
-                token,
                 id: admin._id,
                 email:admin.email,
                 role:admin.role
@@ -51,11 +54,13 @@ export const login  = async (req,res) => {
             if(!isMatch){
                 return res.status(401).json({message:"Wrong credentials"});
             }
+            
 
             const token = generateToken(donor);
+            res.cookie("token", token, {httpOnly: true,secure: false,sameSite: "lax",maxAge: 7 * 24 * 60 * 60 * 1000,});
+
             return res.status(200).json({
                 message: "Login Successfull",
-                token,
                 id: donor._id,
                 email:donor.email,
                 role:donor.role
@@ -83,9 +88,11 @@ export const login  = async (req,res) => {
             }
 
             const token = generateToken(organisation);
+            //save token in cookie
+            res.cookie("token", token, {httpOnly: true,secure: false,sameSite: "lax",maxAge: 7 * 24 * 60 * 60 * 1000,});
+
             return res.status(200).json({
                 message: "Login successful",
-                token,
                 user: {
                     id: organisation._id,
                     email: organisation.email,
@@ -104,3 +111,25 @@ export const login  = async (req,res) => {
         res.status(500).json({message:"Server error!"})
     }
 }
+
+
+//logout 
+export const logout = async (req, res) => {
+
+  try {
+
+    res.clearCookie("token");
+
+    res.status(200).json({
+      message: "Logout successful",
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
+};
