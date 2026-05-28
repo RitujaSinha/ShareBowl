@@ -1,3 +1,5 @@
+import Donation from "../models/donormodels/Donation.js"
+
 export const getDonationCounts =
 async (req, res) => {
 
