@@ -133,3 +133,11 @@ export const logout = async (req, res) => {
     });
   }
 };
+
+
+//for protect internal route
+export const getMe = (req, res) => {
+  return res.json({
+    user: req.user,
+  });
+};

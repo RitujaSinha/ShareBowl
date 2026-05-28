@@ -4,39 +4,39 @@ import {
   PackageCheck,
   Clock3,
   LogOut,
-  HandHelping,
 } from "lucide-react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Sidebar() {
-
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
 
   // logout
   const handleLogout = async () => {
-
-  try {
-
-    await fetch(
-      "http://localhost:5000/api/auth/logout",
-      {
+    try {
+      await fetch("http://localhost:5000/api/auth/logout", {
         method: "POST",
-
         credentials: "include",
-      }
-    );
+      });
 
-    localStorage.removeItem("user");
-    navigate("/login");
+      localStorage.removeItem("user");
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  } catch (error) {
-    console.log(error);
-  }
- };
+  const btnClass = (active) =>
+    `flex items-center gap-4 rounded-xl px-5 py-4 text-lg transition ${
+      active
+        ? "bg-indigo-600 text-white"
+        : "hover:bg-zinc-800 text-zinc-300"
+    }`;
 
   return (
-
     <div className="w-72 border-r border-zinc-800 bg-zinc-900 p-6">
 
       {/* Logo */}
@@ -47,40 +47,28 @@ export default function Sidebar() {
       {/* Menu */}
       <div className="flex flex-col gap-4">
 
-        {/* Dashboard */}
         <button
           onClick={() => navigate("/organisation-dashboard")}
-          className="flex items-center gap-4 rounded-xl bg-indigo-600 px-5 py-4 text-lg font-semibold transition hover:bg-indigo-500"
+          className={btnClass(isActive("/organisation-dashboard"))}
         >
           <LayoutDashboard size={24} />
           Dashboard
         </button>
 
-        {/* Pending */}
         <button
           onClick={() => navigate("/pending-donations")}
-          className="flex items-center gap-4 rounded-xl px-5 py-4 text-lg transition hover:bg-zinc-800"
+          className={btnClass(isActive("/pending-donations"))}
         >
           <Clock3 size={24} />
           Pending Donations
         </button>
 
-        {/* Accepted */}
         <button
           onClick={() => navigate("/accepted-donations")}
-          className="flex items-center gap-4 rounded-xl px-5 py-4 text-lg transition hover:bg-zinc-800"
+          className={btnClass(isActive("/accepted-donations"))}
         >
           <PackageCheck size={24} />
           Accepted Donations
-        </button>
-
-        {/* Requests */}
-        <button
-          onClick={() => navigate("/request-donations")}
-          className="flex items-center gap-4 rounded-xl px-5 py-4 text-lg transition hover:bg-zinc-800"
-        >
-          <HandHelping size={24} />
-          Request Donations
         </button>
 
       </div>
@@ -93,7 +81,6 @@ export default function Sidebar() {
         <LogOut size={22} />
         Logout
       </button>
-
     </div>
   );
 }

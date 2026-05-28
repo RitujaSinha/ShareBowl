@@ -6,7 +6,6 @@ export const protect = (req,res,next) => {
     // Get token from cookies
     const token =
       req.cookies?.token;
-    // console.log(token)
     // No token
     if (!token) {
 

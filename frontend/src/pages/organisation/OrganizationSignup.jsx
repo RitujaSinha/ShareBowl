@@ -45,7 +45,7 @@ export default function OrganizationSignup() {
     try {
 
       const res = await fetch(
-        "http://localhost:8000/api/auth/signup/organisation",
+        "http://localhost:5000/api/auth/signup/organisation",
         {
           method: "POST",
 
