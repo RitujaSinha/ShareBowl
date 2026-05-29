@@ -30,7 +30,7 @@ export default function Login() {
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
-        credentials: "include", // 🔥 JWT cookie
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -52,6 +52,11 @@ export default function Login() {
         toast.error("Invalid server response");
         return;
       }
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(user)
+      );
 
       toast.success("Login successful");
 

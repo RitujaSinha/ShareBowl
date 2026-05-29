@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 
 import Donor from "../models/donormodels/Donor.models.js";
 import Organisation from "../models/organisationmodels/Organisation.models.js";
-import Admin from "../models/admin.models.js";
 
 import generateToken from "../utils/generateToken.js";
 
@@ -18,18 +17,30 @@ export const login = async (req, res) => {
 
     // ================= ADMIN =================
     if (role === "admin") {
-      user = await Admin.findOne({ email });
 
-      if (!user) {
-        return res.status(401).json({ message: "Wrong credentials" });
+      console.log("ADMIN_EMAIL:", process.env.ADMIN_EMAIL);
+  console.log("ADMIN_PASSWORD:", process.env.ADMIN_PASSWORD);
+  console.log("EMAIL FROM LOGIN:", email);
+  console.log("PASSWORD FROM LOGIN:", password);
+
+      if (
+        email !== process.env.ADMIN_EMAIL ||
+        password !== process.env.ADMIN_PASSWORD
+      ) {
+        return res.status(401).json({
+          message: "Wrong credentials",
+        });
       }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-
-      if (!isMatch) {
-        return res.status(401).json({ message: "Wrong credentials" });
-      }
+    
+      user = {
+        _id: "admin",
+        email: process.env.ADMIN_EMAIL,
+        role: "admin",
+      };
     }
+
+
+    
 
     // ================= DONOR =================
     else if (role === "donor") {
@@ -127,3 +138,4 @@ export const getMe = (req, res) => {
     user: req.user,
   });
 };
+
