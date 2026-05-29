@@ -6,6 +6,7 @@ import cors from "cors"
 import donationRoutes from "./routes/donation.routes.js"
 import authRoutes from "./routes/auth.routes.js"
 import organisationRoutes from "./routes/organisation.routes.js"
+import adminRoutes from "./routes/admin.routes.js";
 dotenv.config();
 
 const app = express();
@@ -23,6 +24,8 @@ app.use("/api/donation", donationRoutes);
 app.use("/api/auth", authRoutes);
 
 app.use("/api/organisation",organisationRoutes)
+
+app.use("/api/admin", adminRoutes);
 
 
 

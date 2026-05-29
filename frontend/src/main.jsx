@@ -22,6 +22,7 @@ import PendingDonation from "./pages/organisation/PendingDonation.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import DonorDirectory from "./pages/admin/DonorDirectory";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -105,6 +106,15 @@ createRoot(document.getElementById("root")).render(
         element={
           <ProtectedRoute role="admin">
             <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/donors"
+        element={
+          <ProtectedRoute role="admin">
+            <DonorDirectory />
           </ProtectedRoute>
         }
       />

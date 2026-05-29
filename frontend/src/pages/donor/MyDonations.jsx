@@ -341,16 +341,20 @@ function MyDonations() {
               {/* Buttons */}
               <div className="mt-5 flex gap-3">
 
-                <button
-                  onClick={() =>
-                    handleDelete(d._id)
-                  }
-                  className="rounded-xl bg-red-600 px-4 py-2 font-semibold transition hover:bg-red-500"
-                >
+                {d.status === "Pending" && (
+                  <button
+                    onClick={() => handleDelete(d._id)}
+                    className="rounded-xl bg-red-600 px-4 py-2 font-semibold transition hover:bg-red-500"
+                  >
+                    Delete
+                  </button>
+                )}
 
-                  Delete
-
-                </button>
+                {d.status === "Accepted" && (
+                  <div className="rounded-xl bg-green-500/20 px-4 py-2 text-green-400 font-semibold">
+                    Accepted by NGO
+                  </div>
+                )}
 
               </div>
 

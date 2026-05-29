@@ -175,19 +175,6 @@ function AdminDashboard() {
 
         </div>
 
-        <div className="mt-10 bg-white rounded-2xl shadow border p-6">
-          <h2 className="text-xl font-semibold mb-3">
-            Administrator Responsibilities
-          </h2>
-
-          <ul className="space-y-2 text-gray-600">
-            <li>Review organisation registration requests</li>
-            <li>Monitor donation activity</li>
-            <li>Manage donor records</li>
-            <li>Track location-wise donation statistics</li>
-          </ul>
-        </div>
-
       </div>
     </div>
   );

@@ -178,6 +178,12 @@ export const deleteDonation = async (req, res) => {
           message: "Donation not found",
         });
       }
+
+      if (donation.status === "Accepted") {
+        return res.status(400).json({
+          message: "Accepted donations cannot be deleted",
+        });
+      }
   
       if (donation.donor.toString() !== req.user.userId) {
         return res.status(403).json({
