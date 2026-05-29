@@ -23,6 +23,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import DonorDirectory from "./pages/admin/DonorDirectory";
+import DonationByLocation from "./pages/admin/DonationByLocation";
+import OrganisationRequests from "./pages/admin/OrganisationRequests";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -115,6 +117,22 @@ createRoot(document.getElementById("root")).render(
         element={
           <ProtectedRoute role="admin">
             <DonorDirectory />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/donations"
+        element={
+          <ProtectedRoute role="admin">
+            <DonationByLocation />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/organisations"
+        element={
+          <ProtectedRoute role="admin">
+            <OrganisationRequests />
           </ProtectedRoute>
         }
       />

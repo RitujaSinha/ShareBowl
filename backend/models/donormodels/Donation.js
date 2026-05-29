@@ -41,12 +41,24 @@ const donationSchema = new mongoose.Schema({
       type: Number,
       required: true,
     },
-
+  
     lng: {
       type: Number,
       required: true,
     },
-
+  
+    city: {
+      type: String,
+    },
+  
+    district: {
+      type: String,
+    },
+  
+    state: {
+      type: String,
+    },
+  
   },
 
   // Donation status

@@ -60,35 +60,73 @@ function AddDonation() {
   const getLocation = () => {
 
     if (!navigator.geolocation) {
-
+  
       toast.error(
         "Geolocation not supported"
       );
-
+  
       return;
     }
-
+  
     navigator.geolocation.getCurrentPosition(
-
-      (pos) => {
-
-        const lat =
-          pos.coords.latitude;
-
-        const lng =
-          pos.coords.longitude;
-
-        setLocation({ lat, lng });
-
-        toast.success(
-          "Location added"
-        );
+  
+      async (pos) => {
+  
+        try {
+  
+          const lat =
+            pos.coords.latitude;
+  
+          const lng =
+            pos.coords.longitude;
+  
+          const response =
+            await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+            );
+  
+          const data =
+            await response.json();
+  
+          setLocation({
+  
+            lat,
+            lng,
+  
+            city:
+              data.address.city ||
+              data.address.town ||
+              data.address.village ||
+              "",
+  
+            district:
+              data.address.county ||
+              "",
+  
+            state:
+              data.address.state ||
+              "",
+  
+          });
+  
+          toast.success(
+            "Location added"
+          );
+  
+        } catch (error) {
+  
+          console.log(error);
+  
+          toast.error(
+            "Failed to fetch location details"
+          );
+        }
       },
-
+  
       (err) => {
-
+  
         console.log(err);
-
+  
         toast.error(
           "Location access denied"
         );
@@ -374,15 +412,27 @@ function AddDonation() {
           {/* Show Location */}
           {location && (
 
-            <p className="text-sm text-green-600">
+          <div className="text-sm text-green-600">
 
-              📍 Location Added:
+            <p>
+              State:
               {" "}
-              {location.lat.toFixed(4)},
-              {" "}
-              {location.lng.toFixed(4)}
-
+              {location.state}
             </p>
+
+            <p>
+              District:
+              {" "}
+              {location.district}
+            </p>
+
+            <p>
+              City:
+              {" "}
+              {location.city}
+            </p>
+
+          </div>
           )}
 
           {/* Submit */}
