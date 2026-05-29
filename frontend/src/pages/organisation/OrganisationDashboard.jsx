@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/organisation/Sidebar";
+import LogoutModal from "../../components/LogoutModal";
 
 export default function OrganisationDashboard() {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ export default function OrganisationDashboard() {
   });
 
   const [donations, setDonations] = useState([]);
+  const [showLogoutModal, setShowLogoutModal] =
+  useState(false);
 
   // ======================
   // FETCH DASHBOARD INFO
@@ -80,6 +83,29 @@ export default function OrganisationDashboard() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+  
+      await fetch(
+        "http://localhost:5000/api/auth/logout",
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+  
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+  
+      setShowLogoutModal(false);
+  
+      navigate("/login");
+  
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // ======================
   // INIT
   // ======================
@@ -109,15 +135,26 @@ export default function OrganisationDashboard() {
           </div>
 
           {/* PROFILE (FIXED - NO STATIC DATA) */}
-          <div className="rounded-2xl border border-zinc-700 bg-zinc-900 px-6 py-4">
+          <div className="flex items-center gap-4">
 
-            <p className="text-lg font-semibold">
-              {orgInfo.organisationName || "Loading..."}
-            </p>
+            <div className="rounded-2xl border border-zinc-700 bg-zinc-900 px-6 py-4">
 
-            <p className="text-sm text-zinc-400">
-              NGO Organisation
-            </p>
+              <p className="text-lg font-semibold">
+                {orgInfo.organisationName || "Loading..."}
+              </p>
+
+              <p className="text-sm text-zinc-400">
+                NGO Organisation
+              </p>
+
+            </div>
+
+            <button
+              onClick={() => setShowLogoutModal(true)}
+              className="rounded-xl bg-red-600 px-5 py-3 font-semibold hover:bg-red-500"
+            >
+              Logout
+            </button>
 
           </div>
 
@@ -232,6 +269,11 @@ export default function OrganisationDashboard() {
           </div>
 
         </div>
+        <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+      />
 
       </div>
     </div>

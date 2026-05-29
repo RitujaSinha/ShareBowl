@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LogoutModal from "../../components/LogoutModal";
 
 function DonorDashboard() {
   const navigate = useNavigate();
@@ -12,7 +13,9 @@ function DonorDashboard() {
     pending: 0,
   });
 
-  // Fetch My Donations
+  const [showLogoutModal, setShowLogoutModal] =
+    useState(false);
+
   const fetchDonations = async () => {
     try {
       const res = await fetch(
@@ -30,7 +33,6 @@ function DonorDashboard() {
     }
   };
 
-  // Fetch Counts
   const fetchCounts = async () => {
     try {
       const res = await fetch(
@@ -52,13 +54,11 @@ function DonorDashboard() {
     }
   };
 
-  // Load Data
   useEffect(() => {
     fetchDonations();
     fetchCounts();
   }, []);
 
-  // Logout
   const handleLogout = async () => {
     try {
       await fetch(
@@ -69,6 +69,11 @@ function DonorDashboard() {
         }
       );
 
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+
+      setShowLogoutModal(false);
+
       navigate("/login");
     } catch (error) {
       console.log(error);
@@ -78,7 +83,6 @@ function DonorDashboard() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
 
-      {/* Header */}
       <div className="flex justify-between items-center mb-8">
 
         <div>
@@ -88,7 +92,7 @@ function DonorDashboard() {
         </div>
 
         <button
-          onClick={handleLogout}
+          onClick={() => setShowLogoutModal(true)}
           className="bg-red-500 text-white px-4 py-2 rounded"
         >
           Logout
@@ -96,7 +100,6 @@ function DonorDashboard() {
 
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
 
         <div className="bg-white p-5 rounded-xl shadow border">
@@ -131,7 +134,6 @@ function DonorDashboard() {
 
       </div>
 
-      {/* Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
 
         <div
@@ -162,7 +164,6 @@ function DonorDashboard() {
 
       </div>
 
-      {/* Recent Donations */}
       <h2 className="text-xl font-semibold mb-4">
         Recent Donations
       </h2>
@@ -191,7 +192,9 @@ function DonorDashboard() {
                 </p>
 
                 <p className="text-sm text-gray-400">
-                  {new Date(d.createdAt).toLocaleDateString()}
+                  {new Date(
+                    d.createdAt
+                  ).toLocaleDateString()}
                 </p>
 
               </div>
@@ -200,7 +203,11 @@ function DonorDashboard() {
                 className={`text-sm font-medium ${
                   d.status === "Pending"
                     ? "text-yellow-500"
-                    : "text-green-600"
+                    : d.status === "Accepted"
+                    ? "text-green-600"
+                    : d.status === "Rejected"
+                    ? "text-red-500"
+                    : "text-blue-600"
                 }`}
               >
                 {d.status}
@@ -212,15 +219,19 @@ function DonorDashboard() {
         </div>
       )}
 
-      {/* Tip */}
       <div className="mt-8 bg-blue-100 p-4 rounded-lg">
 
         <p className="text-blue-700">
-          💡 Tip:
-          Add clear descriptions to help NGOs accept faster!
+          💡 Tip: Add clear descriptions to help NGOs accept faster!
         </p>
 
       </div>
+
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+      />
 
     </div>
   );

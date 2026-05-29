@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LogoutModal from "../../components/LogoutModal";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -11,51 +12,46 @@ function AdminDashboard() {
     donations: 0,
   });
 
+  const [showLogoutModal, setShowLogoutModal] =
+    useState(false);
+
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-  
+    const user = JSON.parse(
+      localStorage.getItem("user")
+    );
+
     if (!user || user.role !== "admin") {
       navigate("/login");
+      return;
     }
-  
+
     setStats({
       donors: 12,
       organisations: 5,
       pendingOrganisations: 2,
       donations: 30,
     });
-  }, []);
+  }, [navigate]);
 
-//   const fetchStats = async () => {
-//     try {
-//       const token = localStorage.getItem("token");
+  const handleLogout = async () => {
+    try {
+      await fetch(
+        "http://localhost:5000/api/auth/logout",
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
-//       const res = await fetch(
-//         "http://localhost:5000/api/admin/dashboard",
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
 
-//       const data = await res.json();
+      setShowLogoutModal(false);
 
-//       setStats({
-//         donors: data.donors || 0,
-//         organisations: data.organisations || 0,
-//         pendingOrganisations: data.pendingOrganisations || 0,
-//         donations: data.donations || 0,
-//       });
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    navigate("/login");
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -63,6 +59,7 @@ function AdminDashboard() {
 
       <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-8 py-8">
         <div className="flex justify-between items-center">
+
           <div>
             <h1 className="text-3xl font-bold">
               Admin Dashboard
@@ -74,11 +71,14 @@ function AdminDashboard() {
           </div>
 
           <button
-            onClick={handleLogout}
+            onClick={() =>
+              setShowLogoutModal(true)
+            }
             className="bg-white text-slate-800 px-4 py-2 rounded-lg font-medium"
           >
             Logout
           </button>
+
         </div>
       </div>
 
@@ -135,7 +135,9 @@ function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           <div
-            onClick={() => navigate("/admin/organisations")}
+            onClick={() =>
+              navigate("/admin/organisations")
+            }
             className="bg-white p-6 rounded-2xl shadow border cursor-pointer hover:shadow-lg transition"
           >
             <h3 className="text-lg font-semibold">
@@ -148,7 +150,9 @@ function AdminDashboard() {
           </div>
 
           <div
-            onClick={() => navigate("/admin/donors")}
+            onClick={() =>
+              navigate("/admin/donors")
+            }
             className="bg-white p-6 rounded-2xl shadow border cursor-pointer hover:shadow-lg transition"
           >
             <h3 className="text-lg font-semibold">
@@ -161,7 +165,9 @@ function AdminDashboard() {
           </div>
 
           <div
-            onClick={() => navigate("/admin/donations")}
+            onClick={() =>
+              navigate("/admin/donations")
+            }
             className="bg-white p-6 rounded-2xl shadow border cursor-pointer hover:shadow-lg transition"
           >
             <h3 className="text-lg font-semibold">
@@ -175,7 +181,16 @@ function AdminDashboard() {
 
         </div>
 
+        <LogoutModal
+          isOpen={showLogoutModal}
+          onClose={() =>
+            setShowLogoutModal(false)
+          }
+          onConfirm={handleLogout}
+        />
+
       </div>
+
     </div>
   );
 }
