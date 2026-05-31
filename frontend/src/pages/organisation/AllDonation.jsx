@@ -1,4 +1,10 @@
 import React, { useEffect, useState } from "react";
+import {
+  CalendarDays,
+  HeartHandshake,
+  Package,
+  User,
+} from "lucide-react";
 import Sidebar from "../../components/organisation/Sidebar";
 
 function AllDonation() {
@@ -21,7 +27,6 @@ function AllDonation() {
       } else {
         setDonations([]);
       }
-
     } catch (err) {
       console.log(err);
       setDonations([]);
@@ -32,85 +37,111 @@ function AllDonation() {
     fetchDonations();
   }, []);
 
-  return (
-    <div className="flex min-h-screen bg-black text-white">
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Pending":
+        return "bg-amber-100 text-amber-700 border-amber-200";
+      case "Accepted":
+        return "bg-green-100 text-green-700 border-green-200";
+      case "Rejected":
+        return "bg-red-100 text-red-700 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-700 border-gray-200";
+    }
+  };
 
-      {/* SIDEBAR */}
+  return (
+    <div className="flex min-h-screen bg-[#F5FBF7]">
       <Sidebar />
 
-      {/* MAIN CONTENT */}
-      <div className="flex-1 p-6">
+      <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-6 rounded-3xl border border-green-100 bg-white p-5 shadow-sm">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-600 text-white">
+                <HeartHandshake size={26} strokeWidth={2.5} />
+              </div>
 
-        <h1 className="text-3xl font-bold mb-6">
-          Donations Received by Organisation
-        </h1>
+              <div>
+                <p className="text-sm font-bold uppercase tracking-widest text-green-600">
+                  Organisation Portal
+                </p>
 
-        {/* EMPTY STATE */}
-        {donations.length === 0 ? (
-          <p className="text-gray-400">
-            No donations received yet
-          </p>
-        ) : (
-          <div className="space-y-4">
+                <h1 className="text-2xl font-black text-gray-900">
+                  Donations Received
+                </h1>
 
-            {donations.map((d) => (
-              <div
-                key={d._id}
-                className="bg-zinc-900 p-5 rounded-xl border border-zinc-800"
-              >
+                <p className="text-sm font-medium text-gray-500">
+                  All donation requests received by your organisation
+                </p>
+              </div>
+            </div>
+          </div>
 
-                {/* HEADER */}
-                <div className="flex justify-between">
+          {donations.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-green-200 bg-green-50 p-10 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-green-700 shadow-sm">
+                <Package size={28} strokeWidth={2.5} />
+              </div>
 
-                  <div>
+              <h3 className="text-lg font-black text-gray-900">
+                No donations received yet
+              </h3>
 
-                    {/* FIXED FIELD */}
-                    <h2 className="text-lg font-semibold">
-                      {d.type}
-                    </h2>
+              <p className="mt-1 text-sm font-medium text-gray-500">
+                New donation requests will appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {donations.map((d) => (
+                <div
+                  key={d._id}
+                  className="rounded-3xl border border-green-100 bg-white p-5 shadow-sm transition hover:bg-green-50/50"
+                >
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100 text-green-700">
+                        <Package size={25} strokeWidth={2.5} />
+                      </div>
 
-                    <p className="text-sm text-gray-400">
-                      Quantity: {d.quantity}
-                    </p>
+                      <div>
+                        <h2 className="text-lg font-black text-gray-900">
+                          {d.type}
+                        </h2>
 
-                    <p className="text-sm text-gray-400">
-                      Donor: {d.donor?.name || "Anonymous"}
-                    </p>
+                        <div className="mt-2 space-y-1">
+                          <p className="text-sm font-semibold text-gray-600">
+                            Quantity: {d.quantity}
+                          </p>
 
-                  </div>
-
-                  {/* STATUS */}
-                  <div>
+                          <p className="flex items-center gap-2 text-sm font-semibold text-gray-600">
+                            <User size={16} strokeWidth={2.5} />
+                            Donor: {d.donor?.name || "Anonymous"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
                     <span
-                      className={`px-3 py-1 rounded text-sm ${
-                        d.status === "Pending"
-                          ? "bg-yellow-500/20 text-yellow-400"
-                          : d.status === "Accepted"
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-red-500/20 text-red-400"
-                      }`}
+                      className={`w-fit rounded-full border px-3 py-1 text-xs font-black ${getStatusClass(
+                        d.status
+                      )}`}
                     >
                       {d.status}
                     </span>
-
                   </div>
 
+                  <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-gray-500">
+                    <CalendarDays size={15} strokeWidth={2.5} />
+                    {new Date(d.createdAt).toLocaleString()}
+                  </div>
                 </div>
-
-                {/* DATE */}
-                <p className="text-xs text-gray-500 mt-3">
-                  {new Date(d.createdAt).toLocaleString()}
-                </p>
-
-              </div>
-            ))}
-
-          </div>
-        )}
-
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-
     </div>
   );
 }
