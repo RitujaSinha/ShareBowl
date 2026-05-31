@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  ArrowRight,
+  Building2,
+  Clock3,
+  Gift,
+  HeartHandshake,
+  LogOut,
+  MapPinned,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 import LogoutModal from "../../components/LogoutModal";
 
 function AdminDashboard() {
@@ -12,13 +23,10 @@ function AdminDashboard() {
     donations: 0,
   });
 
-  const [showLogoutModal, setShowLogoutModal] =
-    useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
-    const user = JSON.parse(
-      localStorage.getItem("user")
-    );
+    const user = JSON.parse(localStorage.getItem("user"));
 
     if (!user || user.role !== "admin") {
       navigate("/login");
@@ -35,13 +43,10 @@ function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch(
-        "http://localhost:5000/api/auth/logout",
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
+      await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
 
       localStorage.removeItem("user");
       localStorage.removeItem("token");
@@ -55,142 +60,182 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F8FAFC] px-4 py-6">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-6 flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white">
+              <ShieldCheck size={26} strokeWidth={2.5} />
+            </div>
 
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-8 py-8">
-        <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-widest text-slate-500">
+                Admin Panel
+              </p>
 
-          <div>
-            <h1 className="text-3xl font-bold">
-              Admin Dashboard
-            </h1>
+              <h1 className="text-2xl font-black text-gray-900">
+                Dashboard
+              </h1>
 
-            <p className="text-gray-300 mt-1">
-              Manage organisations, donors and donations
-            </p>
+              <p className="text-sm font-medium text-gray-500">
+                Manage organisations, donors and donations
+              </p>
+            </div>
           </div>
 
           <button
-            onClick={() =>
-              setShowLogoutModal(true)
-            }
-            className="bg-white text-slate-800 px-4 py-2 rounded-lg font-medium"
+            onClick={() => setShowLogoutModal(true)}
+            className="flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-100"
           >
+            <LogOut size={17} />
             Logout
           </button>
-
         </div>
-      </div>
 
-      <div className="p-8">
+        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-3xl border border-blue-100 bg-white p-5 shadow-sm">
+            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-700">
+              <Users size={24} strokeWidth={2.5} />
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-
-          <div className="bg-white p-6 rounded-2xl shadow border">
-            <h3 className="text-gray-500 text-sm">
+            <p className="text-sm font-bold text-gray-500">
               Total Donors
-            </h3>
+            </p>
 
-            <p className="text-3xl font-bold mt-2">
+            <h2 className="mt-2 text-3xl font-black text-gray-900">
               {stats.donors}
-            </p>
+            </h2>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow border">
-            <h3 className="text-gray-500 text-sm">
+          <div className="rounded-3xl border border-green-100 bg-white p-5 shadow-sm">
+            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-green-100 text-green-700">
+              <Building2 size={24} strokeWidth={2.5} />
+            </div>
+
+            <p className="text-sm font-bold text-gray-500">
               Organisations
-            </h3>
+            </p>
 
-            <p className="text-3xl font-bold mt-2">
+            <h2 className="mt-2 text-3xl font-black text-gray-900">
               {stats.organisations}
-            </p>
+            </h2>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow border">
-            <h3 className="text-gray-500 text-sm">
+          <div className="rounded-3xl border border-amber-100 bg-white p-5 shadow-sm">
+            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
+              <Clock3 size={24} strokeWidth={2.5} />
+            </div>
+
+            <p className="text-sm font-bold text-gray-500">
               Pending Requests
-            </h3>
+            </p>
 
-            <p className="text-3xl font-bold mt-2 text-yellow-600">
+            <h2 className="mt-2 text-3xl font-black text-amber-600">
               {stats.pendingOrganisations}
-            </p>
+            </h2>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow border">
-            <h3 className="text-gray-500 text-sm">
+          <div className="rounded-3xl border border-emerald-100 bg-white p-5 shadow-sm">
+            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+              <Gift size={24} strokeWidth={2.5} />
+            </div>
+
+            <p className="text-sm font-bold text-gray-500">
               Total Donations
-            </h3>
-
-            <p className="text-3xl font-bold mt-2 text-green-600">
-              {stats.donations}
             </p>
-          </div>
 
+            <h2 className="mt-2 text-3xl font-black text-emerald-700">
+              {stats.donations}
+            </h2>
+          </div>
         </div>
 
-        <h2 className="text-2xl font-semibold mb-5">
-          Administration
-        </h2>
+        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-5">
+            <h2 className="text-xl font-black text-gray-900">
+              Administration
+            </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          <div
-            onClick={() =>
-              navigate("/admin/organisations")
-            }
-            className="bg-white p-6 rounded-2xl shadow border cursor-pointer hover:shadow-lg transition"
-          >
-            <h3 className="text-lg font-semibold">
-              Organisation Requests
-            </h3>
-
-            <p className="text-gray-500 mt-2">
-              Approve or reject organisation registrations.
+            <p className="text-sm font-medium text-gray-500">
+              Quick access to admin management sections
             </p>
           </div>
 
-          <div
-            onClick={() =>
-              navigate("/admin/donors")
-            }
-            className="bg-white p-6 rounded-2xl shadow border cursor-pointer hover:shadow-lg transition"
-          >
-            <h3 className="text-lg font-semibold">
-              Donor Directory
-            </h3>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div
+              onClick={() => navigate("/admin/organisations")}
+              className="group cursor-pointer rounded-3xl border border-green-100 bg-green-50 p-5 transition hover:bg-green-100"
+            >
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-green-700 shadow-sm">
+                <HeartHandshake size={25} strokeWidth={2.5} />
+              </div>
 
-            <p className="text-gray-500 mt-2">
-              View all registered donors.
-            </p>
+              <h3 className="text-lg font-black text-gray-900">
+                Organisation Requests
+              </h3>
+
+              <p className="mt-2 text-sm font-medium text-gray-600">
+                Approve or reject organisation registrations.
+              </p>
+
+              <div className="mt-5 flex items-center gap-2 text-sm font-black text-green-700">
+                Open
+                <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+              </div>
+            </div>
+
+            <div
+              onClick={() => navigate("/admin/donors")}
+              className="group cursor-pointer rounded-3xl border border-blue-100 bg-blue-50 p-5 transition hover:bg-blue-100"
+            >
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-blue-700 shadow-sm">
+                <Users size={25} strokeWidth={2.5} />
+              </div>
+
+              <h3 className="text-lg font-black text-gray-900">
+                Donor Directory
+              </h3>
+
+              <p className="mt-2 text-sm font-medium text-gray-600">
+                View all registered donors.
+              </p>
+
+              <div className="mt-5 flex items-center gap-2 text-sm font-black text-blue-700">
+                Open
+                <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+              </div>
+            </div>
+
+            <div
+              onClick={() => navigate("/admin/donations")}
+              className="group cursor-pointer rounded-3xl border border-amber-100 bg-amber-50 p-5 transition hover:bg-amber-100"
+            >
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-amber-700 shadow-sm">
+                <MapPinned size={25} strokeWidth={2.5} />
+              </div>
+
+              <h3 className="text-lg font-black text-gray-900">
+                Donations By Location
+              </h3>
+
+              <p className="mt-2 text-sm font-medium text-gray-600">
+                Filter donations by state and district.
+              </p>
+
+              <div className="mt-5 flex items-center gap-2 text-sm font-black text-amber-700">
+                Open
+                <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+              </div>
+            </div>
           </div>
-
-          <div
-            onClick={() =>
-              navigate("/admin/donations")
-            }
-            className="bg-white p-6 rounded-2xl shadow border cursor-pointer hover:shadow-lg transition"
-          >
-            <h3 className="text-lg font-semibold">
-              Donations By Location
-            </h3>
-
-            <p className="text-gray-500 mt-2">
-              Filter donations by state and district.
-            </p>
-          </div>
-
         </div>
 
         <LogoutModal
           isOpen={showLogoutModal}
-          onClose={() =>
-            setShowLogoutModal(false)
-          }
+          onClose={() => setShowLogoutModal(false)}
           onConfirm={handleLogout}
         />
-
       </div>
-
     </div>
   );
 }
