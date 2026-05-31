@@ -39,7 +39,7 @@ export default function DonorSignup() {
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include", // ✅ IMPORTANT for JWT cookie auth
+          credentials: "include", 
           body: JSON.stringify({
             donorName: form.donorName,
             email: form.email,
