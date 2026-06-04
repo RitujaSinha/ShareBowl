@@ -1,5 +1,5 @@
 import Donation from "../models/donormodels/Donation.js";
-
+import validator from "validator"
 export const addDonation =
 async (req, res) => {
 
@@ -19,18 +19,20 @@ async (req, res) => {
     } = req.body;
 
     // Validation
-    if (
-      !organisation ||
-      !foodType ||
-      !quantity
-    ) {
+    if ( !organisation || !foodType ||!quantity) {
+      return res.status(400).json({ message:"Organisation, food type and quantity are required"});
+    }
 
-      return res.status(400).json({
-
-        message:
-          "Organisation, food type and quantity are required",
-
-      });
+    if(!validator.isInt(quantity.toString(),{min:1})){
+      return res.status(400).json({message:"Quantity must be a positive number"});
+    }
+    
+    const expirydate = new Date(expiry)
+    if(isNaN(expirydate.getTime())){
+      return res.status(400).json({message:"Invalid expiry date"});
+    }
+    if(expirydate<= new Date()){
+      return res.status(400).json({ message: "Food is already expired"});
     }
 
     // Create Donation

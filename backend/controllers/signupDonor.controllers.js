@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import Donor from "../models/donormodels/Donor.models.js";
 import generateToken from "../utils/generateToken.js"; 
+import validator from "validator";
 
 export const signupDonor = async (req, res) => {
 
@@ -19,21 +20,32 @@ export const signupDonor = async (req, res) => {
         } = req.body;
 
         // validation
-        if (
-            !donorName ||
-            !email ||
-            !phone ||
-            !street ||
-            !city ||
-            !district ||
-            !state ||
-            !pincode ||
-            !password
-        ) {
+        if ( !donorName || !email || !phone || !street || !city || !district || !state || !pincode || !password) {
 
             return res.status(400).json({
                 message: "All fields are required"
             });
+        }
+
+        //vlidate data
+        if(!validator.isEmail(email)){
+            return res.status(400).json({message:"Invalid Email"})
+        }
+        if(!validator.isMobilePhone(phone,"en-IN")){
+            return res.status(400).json({message:"Invalid phone no."})
+        }
+        if(!validator.isPostalCode(pincode,"IN")){
+            return res.status(400).json({message:"Invalid Pincode"});
+        }
+        if(!validator.isStrongPassword(password,{minLength:6})){
+            return res.status(400).json({message:"Password must be of 6 length"})
+        }
+        if(!validator.isLength(donorName.trim(), {min:3, max:50})){
+            return res.status(400).json({message:"Donor name must be between 3 and 50 characters."})
+        }
+        if (!validator.matches(city.trim(), /^[A-Za-z\s]+$/)) {
+            return res.status(400).json({
+            message: "City name can only contain letters and spaces",});
         }
 
         // existing donor

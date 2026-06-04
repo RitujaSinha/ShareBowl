@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-
+import validator from "validator"; 
 import Donor from "../models/donormodels/Donor.models.js";
 import Organisation from "../models/organisationmodels/Organisation.models.js";
 
@@ -18,10 +18,10 @@ export const login = async (req, res) => {
     // ================= ADMIN =================
     if (role === "admin") {
 
-      console.log("ADMIN_EMAIL:", process.env.ADMIN_EMAIL);
-  console.log("ADMIN_PASSWORD:", process.env.ADMIN_PASSWORD);
-  console.log("EMAIL FROM LOGIN:", email);
-  console.log("PASSWORD FROM LOGIN:", password);
+      // console.log("ADMIN_EMAIL:", process.env.ADMIN_EMAIL);
+      // console.log("ADMIN_PASSWORD:", process.env.ADMIN_PASSWORD);
+      // console.log("EMAIL FROM LOGIN:", email);
+      // console.log("PASSWORD FROM LOGIN:", password);
 
       if (
         email !== process.env.ADMIN_EMAIL ||
