@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import Organisation from "../models/organisationmodels/Organisation.models.js";
 import { trusted } from "mongoose";
+import validator from 'validator'
 
 export const signupOrganisation = async (req, res) => {
 
@@ -38,7 +39,7 @@ export const signupOrganisation = async (req, res) => {
         if(!validator.isPostalCode(pincode,"IN")){
             return res.status(400).json({message: "Invalid pin code"});
         }
-        if(!validator.isStrongPassword(password,{minLength:6})){
+        if(!validator.isLength(password,{min:6})){
             return res.status(400).json({message:"Pasword must be of 6+ characters"});
         }
         if(!validator.isLength(organisationName,{min:3, max:70})){
