@@ -1,0 +1,10 @@
+This example env need to be created while running on your server
+
+
+PORT=****************
+JWT_SECRET=************
+MONGO_URI=***************
+ADMIN_EMAIL=***************
+ADMIN_PASSWORD=*************
+EMAIL_USER=***************
+EMAIL_PASS=************
