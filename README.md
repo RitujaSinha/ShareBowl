@@ -53,10 +53,11 @@ The goal of ShareBowl is to reduce food waste and create a sustainable donation 
 
 1. Register NGO Account
 2. Wait for Admin Approval
-3. Login After Approval
-4. View Incoming Donations
-5. Accept or Reject Donations
-6. Coordinate Food Pickup
+3. Get Approval Email
+4. Login After Approval
+5. View Incoming Donations
+6. Accept or Reject Donations
+7. Coordinate Food Pickup
 
 ## Admin Workflow
 
