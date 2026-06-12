@@ -37,8 +37,8 @@ export const signupDonor = async (req, res) => {
         if(!validator.isPostalCode(pincode,"IN")){
             return res.status(400).json({message:"Invalid Pincode"});
         }
-        if(!validator.isStrongPassword(password,{minLength:6})){
-            return res.status(400).json({message:"Password must be of 6 length"})
+        if(!validator.isLength(password,{min:6})){
+            return res.status(400).json({message:"Password must be of 6+ length"})
         }
         if(!validator.isLength(donorName.trim(), {min:3, max:50})){
             return res.status(400).json({message:"Donor name must be between 3 and 50 characters."})

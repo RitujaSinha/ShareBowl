@@ -1,6 +1,7 @@
 import Donor from "../models/donormodels/Donor.models.js";
 import Donation from "../models/donormodels/Donation.js";
 import Organisation from "../models/organisationmodels/Organisation.models.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const getAllDonors = async (req, res) => {
   try {
@@ -119,6 +120,24 @@ export const getPendingOrganisations = async (req, res) => {
       organisation.isAdminVerified = true;
   
       await organisation.save();
+
+      await sendEmail(
+        organisation.email,
+        "ShareBowl Registration Approved",
+        `
+        <h1>Welcome to ShareBowl 🎉</h1>
+
+        <p>Hello ${organisation.organisationName},</p>
+
+        <p>Your registration has been approved by our team.</p>
+
+        <p>You can now log in and start managing food donations.</p>
+
+        <br/>
+        <p>Thank you,</p>
+        <p>Team ShareBowl</p>
+        `
+      );
   
       res.status(200).json({
         message: "Organisation approved successfully",
@@ -150,6 +169,20 @@ export const getPendingOrganisations = async (req, res) => {
       }
   
       await organisation.deleteOne();
+      await sendEmail(
+        organisation.email,
+        "ShareBowl Registration Update",
+        `
+        <h2>ShareBowl Registration Update</h2>
+
+        <p>Hello ${organisation.organisationName},</p>
+
+        <p>We are unable to approve your registration at this time.</p>
+
+        <p>Please contact us for to resolve the issue and apply again.</p>
+        <p>Regards,<br>Team ShareBowl</p>
+        `
+      );
   
       res.status(200).json({
         message: "Organisation rejected",
