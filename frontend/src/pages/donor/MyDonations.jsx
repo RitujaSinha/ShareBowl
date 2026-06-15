@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../../api";
 import {
   ArrowLeft,
   CalendarDays,
@@ -12,6 +13,7 @@ import {
   Trash2,
 } from "lucide-react";
 
+
 function MyDonations() {
   const navigate = useNavigate();
 
@@ -21,7 +23,7 @@ function MyDonations() {
 
   const fetchDonations = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/donation/my-donations", {
+      const res = await fetch(`${API_URL}/donation/my-donations`, {
         method: "GET",
         credentials: "include",
       });
@@ -46,7 +48,7 @@ function MyDonations() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/donation/delete/${id}`, {
+      const res = await fetch(`${API_URL}/donation/delete/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

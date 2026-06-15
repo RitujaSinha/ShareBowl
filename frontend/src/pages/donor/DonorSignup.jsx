@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../../api";
 import {
   ArrowLeft,
   HeartHandshake,
@@ -11,6 +12,7 @@ import {
   Send,
   User,
 } from "lucide-react";
+
 
 const INDIA_STATES_DISTRICTS = {
   "Andhra Pradesh": [
@@ -898,7 +900,7 @@ export default function DonorSignup() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup/donor", {
+      const res = await fetch(`${API_URL}/auth/signup/donor`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -10,6 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
+import API_URL from "../api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function Login() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: {

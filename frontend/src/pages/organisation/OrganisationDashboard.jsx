@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../../api";
 import {
   ArrowRight,
   CheckCircle2,
@@ -31,7 +32,7 @@ export default function OrganisationDashboard() {
 
   const fetchDashboard = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/organisation/dashboard", {
+      const res = await fetch(`${API_URL}/organisation/dashboard`, {
         credentials: "include",
       });
 
@@ -46,7 +47,7 @@ export default function OrganisationDashboard() {
 
   const fetchDonations = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/organisation/org-donations", {
+      const res = await fetch(`${API_URL}/organisation/org-donations`, {
         credentials: "include",
       });
 
@@ -60,7 +61,7 @@ export default function OrganisationDashboard() {
 
   const handleAccept = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/organisation/status/${id}`, {
+      await fetch(`${API_URL}/organisation/status/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +79,7 @@ export default function OrganisationDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/api/auth/logout", {
+      await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -194,9 +195,7 @@ export default function OrganisationDashboard() {
                 <CheckCircle2 size={24} strokeWidth={2.5} />
               </div>
 
-              <p className="text-sm font-bold text-gray-500">
-                Accepted
-              </p>
+              <p className="text-sm font-bold text-gray-500">Accepted</p>
 
               <h2 className="mt-2 text-3xl font-black text-green-700">
                 {counts.acceptedDonations}

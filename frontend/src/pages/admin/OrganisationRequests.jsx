@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import API_URL from "../../api";
 import {
   Building2,
   CheckCircle2,
@@ -17,12 +18,9 @@ function OrganisationRequests() {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/admin/organisations/pending",
-        {
-          credentials: "include",
-        }
-      );
+      const res = await fetch(`${API_URL}/admin/organisations/pending`, {
+        credentials: "include",
+      });
 
       const data = await res.json();
 
@@ -44,13 +42,10 @@ function OrganisationRequests() {
 
   const approveOrganisation = async (id) => {
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/admin/organisations/${id}/approve`,
-        {
-          method: "PATCH",
-          credentials: "include",
-        }
-      );
+      const res = await fetch(`${API_URL}/admin/organisations/${id}/approve`, {
+        method: "PATCH",
+        credentials: "include",
+      });
 
       const data = await res.json();
 
@@ -70,13 +65,10 @@ function OrganisationRequests() {
 
   const rejectOrganisation = async (id) => {
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/admin/organisations/${id}/reject`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
+      const res = await fetch(`${API_URL}/admin/organisations/${id}/reject`, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
       const data = await res.json();
 

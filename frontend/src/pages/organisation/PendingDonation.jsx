@@ -10,6 +10,7 @@ import {
   User,
 } from "lucide-react";
 import Sidebar from "../../components/organisation/Sidebar";
+import API_URL from "../../api";
 
 function PendingDonation() {
   const [donations, setDonations] = useState([]);
@@ -19,7 +20,7 @@ function PendingDonation() {
   const fetchDonations = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/organisation/org-donations",
+        `${API_URL}/organisation/org-donations`,
         {
           credentials: "include",
         }
@@ -51,7 +52,7 @@ function PendingDonation() {
   // ACCEPT / REJECT ACTION
   const updateStatus = async (id, status) => {
     try {
-      await fetch(`http://localhost:5000/api/organisation/status/${id}`, {
+      await fetch(`${API_URL}/organisation/status/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

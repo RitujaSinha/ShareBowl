@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../../api";
 import {
   ArrowLeft,
   Building2,
@@ -887,7 +888,7 @@ export default function OrganizationSignup() {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/auth/signup/organisation",
+        `${API_URL}/auth/signup/organisation`,
         {
           method: "POST",
 

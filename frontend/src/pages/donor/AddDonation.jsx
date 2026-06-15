@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../../api";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -33,7 +34,7 @@ function AddDonation() {
   useEffect(() => {
     const fetchOrganisations = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/organisation/all");
+        const res = await fetch(`${API_URL}/organisation/all`);
         const data = await res.json();
         setOrganisations(Array.isArray(data) ? data : []);
       } catch (error) {
@@ -116,7 +117,7 @@ function AddDonation() {
     try {
       setSubmitting(true);
 
-      const res = await fetch("http://localhost:5000/api/donation/create", {
+      const res = await fetch(`${API_URL}/donation/create`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -221,11 +222,7 @@ function AddDonation() {
 
             <input
               type="text"
-              placeholder={
-                category === "Food"
-                  ? "Food Type *"
-                  : "Grocery Item *"
-              }
+              placeholder={category === "Food" ? "Food Type *" : "Grocery Item *"}
               className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold outline-none placeholder:text-gray-400 focus:border-green-500 focus:ring-4 focus:ring-green-100"
               value={form.foodType}
               onChange={(e) => handleChange("foodType", e.target.value)}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../../api";
 import {
   ArrowRight,
   CheckCircle2,
@@ -26,7 +27,7 @@ function DonorDashboard() {
 
   const fetchDonations = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/donation/my-donations", {
+      const res = await fetch(`${API_URL}/donation/my-donations`, {
         credentials: "include",
       });
 
@@ -39,7 +40,7 @@ function DonorDashboard() {
 
   const fetchCounts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/donation/counts", {
+      const res = await fetch(`${API_URL}/donation/counts`, {
         credentials: "include",
       });
 
@@ -62,7 +63,7 @@ function DonorDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/api/auth/logout", {
+      await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -103,9 +104,7 @@ function DonorDashboard() {
               <p className="text-sm font-bold uppercase tracking-widest text-amber-600">
                 Donor Portal
               </p>
-              <h1 className="text-2xl font-black text-gray-900">
-                Dashboard
-              </h1>
+              <h1 className="text-2xl font-black text-gray-900">Dashboard</h1>
             </div>
           </div>
 

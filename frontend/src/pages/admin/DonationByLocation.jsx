@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import API_URL from "../../api";
 import {
   CalendarDays,
   Filter,
@@ -11,6 +12,7 @@ import {
   Building2,
 } from "lucide-react";
 
+
 function DonationByLocation() {
   const [donations, setDonations] = useState([]);
   const [stateFilter, setStateFilter] = useState("");
@@ -18,7 +20,7 @@ function DonationByLocation() {
 
   const fetchDonations = async () => {
     try {
-      let url = "http://localhost:5000/api/admin/donations";
+      let url = `${API_URL}/admin/donations`;
 
       const params = new URLSearchParams();
 

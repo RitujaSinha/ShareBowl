@@ -7,6 +7,7 @@ import {
   User,
 } from "lucide-react";
 import Sidebar from "../../components/organisation/Sidebar";
+import API_URL from "../../api";
 
 function AcceptedDonation() {
   const [donations, setDonations] = useState([]);
@@ -15,7 +16,7 @@ function AcceptedDonation() {
   const fetchAcceptedDonations = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/organisation/org-donations",
+        `${API_URL}/organisation/org-donations`,
         {
           credentials: "include",
         }

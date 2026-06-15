@@ -14,7 +14,7 @@ function AllDonation() {
   const fetchDonations = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/organisation/org-donations",
+        `${API_URL}//organisation/org-donations`,
         {
           credentials: "include",
         }

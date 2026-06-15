@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import API_URL from "../../api";
 import {
   CalendarDays,
   Mail,
@@ -17,7 +18,7 @@ function DonorDirectory() {
 
   const fetchDonors = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/admin/donors", {
+      const res = await fetch(`${API_URL}/admin/donors`, {
         credentials: "include",
       });
 

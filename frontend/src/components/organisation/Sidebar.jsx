@@ -8,6 +8,7 @@ import {
   PackageCheck,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import API_URL from "../../api";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/api/auth/logout", {
+      await fetch( `${API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
