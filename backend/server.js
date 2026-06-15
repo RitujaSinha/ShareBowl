@@ -11,6 +11,11 @@ dotenv.config();
 
 const app = express();
 
+app.get("/", (req, res) => {
+  res.send("ShareBowl backend is running");
+});
+
+
 app.use(express.json())
 //parsing data
 app.use(cors({
