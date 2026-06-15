@@ -27,12 +27,16 @@ async (req, res) => {
       return res.status(400).json({message:"Quantity must be a positive number"});
     }
     
-    const expirydate = new Date(expiry)
-    if(isNaN(expirydate.getTime())){
-      return res.status(400).json({message:"Invalid expiry date"});
-    }
-    if(expirydate<= new Date()){
-      return res.status(400).json({ message: "Food is already expired"});
+    if (category === "Food") {
+      const expirydate = new Date(expiry);
+    
+      if (isNaN(expirydate.getTime())) {
+        return res.status(400).json({ message: "Invalid expiry date" });
+      }
+    
+      if (expirydate <= new Date()) {
+        return res.status(400).json({ message: "Food is already expired" });
+      }
     }
 
     // Create Donation
