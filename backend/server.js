@@ -19,9 +19,13 @@ app.get("/", (req, res) => {
 app.use(express.json())
 //parsing data
 app.use(cors({
-    origin: "http://localhost:5173",
-    credentials:true
-  }));
+  origin: [
+    "http://localhost:5173",
+    "https://share-bowl.netlify.app",
+    "https://amazing-centaur-e9d2b5.netlify.app"
+  ],
+  credentials: true
+}));
 
 app.use(cookieParser())
 
