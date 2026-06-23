@@ -5,18 +5,15 @@ import { sendEmail } from "../utils/sendEmail.js";
 
 export const getAllDonors = async (req, res) => {
   try {
-
     const donors = await Donor.find()
       .select("-password")
       .sort({ createdAt: -1 });
 
     const donorData = await Promise.all(
       donors.map(async (donor) => {
-
-        const donationCount =
-          await Donation.countDocuments({
-            donor: donor._id,
-          });
+        const donationCount = await Donation.countDocuments({
+          donor: donor._id,
+        });
 
         return {
           ...donor._doc,
@@ -28,20 +25,19 @@ export const getAllDonors = async (req, res) => {
     res.status(200).json({
       donors: donorData,
     });
-
   } catch (error) {
-
-    console.log(error);
+    console.error("GET ALL DONORS ERROR:");
+    console.error(error);
+    console.error(error.stack);
 
     res.status(500).json({
-      message: "Server error",
+      message: error.message,
     });
   }
 };
 
 export const getDonationsByLocation = async (req, res) => {
   try {
-
     const { state, district } = req.query;
 
     let filter = {};
@@ -56,10 +52,7 @@ export const getDonationsByLocation = async (req, res) => {
 
     const donations = await Donation.find(filter)
       .populate("donor", "donorName email")
-      .populate(
-        "organisation",
-        "organisationName"
-      )
+      .populate("organisation", "organisationName")
       .sort({
         createdAt: -1,
       });
@@ -67,60 +60,55 @@ export const getDonationsByLocation = async (req, res) => {
     res.status(200).json({
       donations,
     });
-
   } catch (error) {
-
-    console.log(error);
+    console.error("GET DONATIONS ERROR:");
+    console.error(error);
+    console.error(error.stack);
 
     res.status(500).json({
-      message: "Server error",
+      message: error.message,
     });
   }
 };
 
 export const getPendingOrganisations = async (req, res) => {
-    try {
-  
-      const organisations =
-        await Organisation.find({
-          isAdminVerified: false,
-        }).sort({
-          createdAt: -1,
-        });
-  
-      res.status(200).json({
-        organisations,
-      });
-  
-    } catch (error) {
-  
-      console.log(error);
-  
-      res.status(500).json({
-        message: "Server error",
+  try {
+    const organisations = await Organisation.find({
+      isAdminVerified: false,
+    }).sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json({
+      organisations,
+    });
+  } catch (error) {
+    console.error("GET PENDING ORGANISATIONS ERROR:");
+    console.error(error);
+    console.error(error.stack);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const approveOrganisation = async (req, res) => {
+  try {
+    const organisation = await Organisation.findById(req.params.id);
+
+    if (!organisation) {
+      return res.status(404).json({
+        message: "Organisation not found",
       });
     }
-  };
-  
-  export const approveOrganisation = async (req, res) => {
-    try {
-  
-      const organisation =
-        await Organisation.findById(
-          req.params.id
-        );
-  
-      if (!organisation) {
-  
-        return res.status(404).json({
-          message: "Organisation not found",
-        });
-      }
-  
-      organisation.isAdminVerified = true;
-  
-      await organisation.save();
 
+    organisation.isAdminVerified = true;
+
+    await organisation.save();
+
+    // Email should not break approval
+    try {
       await sendEmail(
         organisation.email,
         "ShareBowl Registration Approved",
@@ -138,37 +126,40 @@ export const getPendingOrganisations = async (req, res) => {
         <p>Team ShareBowl</p>
         `
       );
-  
-      res.status(200).json({
-        message: "Organisation approved successfully",
-      });
-  
-    } catch (error) {
-  
-      console.log(error);
-  
-      res.status(500).json({
-        message: "Server error",
+    } catch (emailError) {
+      console.error("EMAIL ERROR (APPROVE):");
+      console.error(emailError);
+      console.error(emailError.message);
+    }
+
+    return res.status(200).json({
+      message: "Organisation approved successfully",
+    });
+  } catch (error) {
+    console.error("APPROVE ORGANISATION ERROR:");
+    console.error(error);
+    console.error(error.stack);
+
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const rejectOrganisation = async (req, res) => {
+  try {
+    const organisation = await Organisation.findById(req.params.id);
+
+    if (!organisation) {
+      return res.status(404).json({
+        message: "Organisation not found",
       });
     }
-  };
-  
-  export const rejectOrganisation = async (req, res) => {
+
+    await organisation.deleteOne();
+
+    // Email should not break rejection
     try {
-  
-      const organisation =
-        await Organisation.findById(
-          req.params.id
-        );
-  
-      if (!organisation) {
-  
-        return res.status(404).json({
-          message: "Organisation not found",
-        });
-      }
-  
-      await organisation.deleteOne();
       await sendEmail(
         organisation.email,
         "ShareBowl Registration Update",
@@ -179,21 +170,27 @@ export const getPendingOrganisations = async (req, res) => {
 
         <p>We are unable to approve your registration at this time.</p>
 
-        <p>Please contact us for to resolve the issue and apply again.</p>
+        <p>Please contact us to resolve the issue and apply again.</p>
+
         <p>Regards,<br>Team ShareBowl</p>
         `
       );
-  
-      res.status(200).json({
-        message: "Organisation rejected",
-      });
-  
-    } catch (error) {
-  
-      console.log(error);
-  
-      res.status(500).json({
-        message: "Server error",
-      });
+    } catch (emailError) {
+      console.error("EMAIL ERROR (REJECT):");
+      console.error(emailError);
+      console.error(emailError.message);
     }
-  };
+
+    return res.status(200).json({
+      message: "Organisation rejected",
+    });
+  } catch (error) {
+    console.error("REJECT ORGANISATION ERROR:");
+    console.error(error);
+    console.error(error.stack);
+
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
