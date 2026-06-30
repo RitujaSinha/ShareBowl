@@ -24,7 +24,28 @@ function AdminDashboard() {
     donations: 0,
   });
 
+  const [loading, setLoading] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const fetchDashboard = async () => {
+    try {
+      const response = await fetch(`${API_URL}/admin/dashboard`, {
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
+      setStats(data);
+    } catch (error) {
+      console.error("Dashboard Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -34,12 +55,7 @@ function AdminDashboard() {
       return;
     }
 
-    setStats({
-      donors: 12,
-      organisations: 5,
-      pendingOrganisations: 2,
-      donations: 30,
-    });
+    fetchDashboard();
   }, [navigate]);
 
   const handleLogout = async () => {
@@ -59,6 +75,14 @@ function AdminDashboard() {
       console.log(error);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-lg font-bold">
+        Loading Dashboard...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] px-4 py-6">
@@ -176,12 +200,15 @@ function AdminDashboard() {
               </h3>
 
               <p className="mt-2 text-sm font-medium text-gray-600">
-                Approve or reject organisation registrations.
+                {stats.pendingOrganisations} pending organisation requests.
               </p>
 
               <div className="mt-5 flex items-center gap-2 text-sm font-black text-green-700">
                 Open
-                <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+                <ArrowRight
+                  size={17}
+                  className="transition group-hover:translate-x-1"
+                />
               </div>
             </div>
 
@@ -198,12 +225,15 @@ function AdminDashboard() {
               </h3>
 
               <p className="mt-2 text-sm font-medium text-gray-600">
-                View all registered donors.
+                {stats.donors} registered donors.
               </p>
 
               <div className="mt-5 flex items-center gap-2 text-sm font-black text-blue-700">
                 Open
-                <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+                <ArrowRight
+                  size={17}
+                  className="transition group-hover:translate-x-1"
+                />
               </div>
             </div>
 
@@ -220,12 +250,15 @@ function AdminDashboard() {
               </h3>
 
               <p className="mt-2 text-sm font-medium text-gray-600">
-                Filter donations by state and district.
+                {stats.donations} donations available.
               </p>
 
               <div className="mt-5 flex items-center gap-2 text-sm font-black text-amber-700">
                 Open
-                <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+                <ArrowRight
+                  size={17}
+                  className="transition group-hover:translate-x-1"
+                />
               </div>
             </div>
           </div>

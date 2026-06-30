@@ -18,11 +18,6 @@ export const login = async (req, res) => {
     // ================= ADMIN =================
     if (role === "admin") {
 
-      // console.log("ADMIN_EMAIL:", process.env.ADMIN_EMAIL);
-      // console.log("ADMIN_PASSWORD:", process.env.ADMIN_PASSWORD);
-      // console.log("EMAIL FROM LOGIN:", email);
-      // console.log("PASSWORD FROM LOGIN:", password);
-
       if (
         email !== process.env.ADMIN_EMAIL ||
         password !== process.env.ADMIN_PASSWORD

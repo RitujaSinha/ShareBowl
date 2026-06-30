@@ -194,3 +194,38 @@ export const rejectOrganisation = async (req, res) => {
     });
   }
 };
+
+
+export const getDashboardStats = async (req, res) => {
+  try {
+    const [
+      donors,
+      organisations,
+      pendingOrganisations,
+      donations,
+    ] = await Promise.all([
+      Donor.countDocuments(),
+      Organisation.countDocuments({
+        isAdminVerified: true,
+      }),
+      Organisation.countDocuments({
+        isAdminVerified: false,
+      }),
+      Donation.countDocuments(),
+    ]);
+
+    res.status(200).json({
+      donors,
+      organisations,
+      pendingOrganisations,
+      donations,
+    });
+  } catch (error) {
+    console.error("GET DASHBOARD STATS ERROR:");
+    console.error(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

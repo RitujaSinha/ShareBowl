@@ -43,4 +43,11 @@ router.delete(
   rejectOrganisation
 );
 
+router.get(
+  "/dashboard",
+  verifyToken,
+  verifyAdmin,
+  getDashboardStats
+);
+
 export default router;
