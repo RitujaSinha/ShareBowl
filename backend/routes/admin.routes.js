@@ -1,6 +1,7 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import {
+  getDashboardStats,
   getAllDonors,
   getDonationsByLocation,
   getPendingOrganisations,
@@ -45,8 +46,8 @@ router.delete(
 
 router.get(
   "/dashboard",
-  verifyToken,
-  verifyAdmin,
+  protect,
+  adminOnly,
   getDashboardStats
 );
 
