@@ -28,20 +28,34 @@ export const addDonation = async (req, res) => {
       });
     }
 
-    if (category === "Food") {
-      const expirydate = new Date(expiry);
+    let finalExpiry = expiry;
 
-      if (isNaN(expirydate.getTime())) {
+    if (category === "Food") {
+      finalExpiry = new Date(Date.now() + 4 * 60 * 60 * 1000);
+    }
+
+    if (category === "Grocery") {
+      if (!expiry) {
+        return res.status(400).json({
+          message: "Expiry date is required for grocery items",
+        });
+      }
+
+      const expiryDate = new Date(expiry);
+
+      if (isNaN(expiryDate.getTime())) {
         return res.status(400).json({
           message: "Invalid expiry date",
         });
       }
 
-      if (expirydate <= new Date()) {
+      if (expiryDate <= new Date()) {
         return res.status(400).json({
-          message: "Food is already expired",
+          message: "Grocery item is already expired",
         });
       }
+
+      finalExpiry = expiryDate;
     }
 
     const donation = await Donation.create({
@@ -50,7 +64,7 @@ export const addDonation = async (req, res) => {
       foodType,
       quantity,
       description,
-      expiry,
+      expiry: finalExpiry,
       brand,
       category,
       location,

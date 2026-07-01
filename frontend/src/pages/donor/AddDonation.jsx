@@ -30,8 +30,8 @@ function AddDonation() {
     foodType: "",
     quantity: "",
     description: "",
-    expiry: "",
     brand: "",
+    expiry: "",
   });
 
   useEffect(() => {
@@ -47,8 +47,6 @@ function AddDonation() {
       const data = await res.json();
 
       const orgList = Array.isArray(data) ? data : data.organisations || [];
-
-      console.log("All Organisations:", orgList);
 
       setAllOrganisations(orgList);
     } catch (error) {
@@ -69,20 +67,20 @@ function AddDonation() {
       .toLowerCase()
       .replace(/[^a-z]/g, "");
   };
-  
+
   const filterOrganisationsByLocation = (currentLocation) => {
     const donorState = normalizeLocationText(currentLocation.state);
     const donorDistrict = normalizeLocationText(currentLocation.district);
-  
+
     const filtered = allOrganisations.filter((org) => {
       const orgState = normalizeLocationText(org.state);
       const orgDistrict = normalizeLocationText(org.district);
-  
+
       return orgState === donorState && orgDistrict === donorDistrict;
     });
-  
+
     setFilteredOrganisations(filtered);
-  
+
     if (filtered.length === 0) {
       toast.error("No approved organisation found in your location");
     } else {
@@ -110,8 +108,6 @@ function AddDonation() {
 
           const data = await response.json();
           const address = data?.address || {};
-
-          console.log("LOCATION ADDRESS:", address);
 
           const state = address.state || "";
 
@@ -181,6 +177,11 @@ function AddDonation() {
 
     if (!location) {
       toast.error("Please add location");
+      return;
+    }
+
+    if (category === "Grocery" && !form.expiry) {
+      toast.error("Please select grocery expiry date");
       return;
     }
 
@@ -406,22 +407,29 @@ function AddDonation() {
             />
 
             {category === "Food" && (
-              <input
-                type="date"
-                className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100"
-                value={form.expiry}
-                onChange={(e) => handleChange("expiry", e.target.value)}
-              />
+              <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm font-semibold text-orange-700">
+                Fresh food should be picked up within <b>4 hours</b>. Expiry
+                time will be set automatically.
+              </div>
             )}
 
             {category === "Grocery" && (
-              <input
-                type="text"
-                placeholder="Brand optional"
-                className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold outline-none placeholder:text-gray-400 focus:border-green-500 focus:ring-4 focus:ring-green-100"
-                value={form.brand}
-                onChange={(e) => handleChange("brand", e.target.value)}
-              />
+              <>
+                <input
+                  type="date"
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100"
+                  value={form.expiry}
+                  onChange={(e) => handleChange("expiry", e.target.value)}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Brand optional"
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold outline-none placeholder:text-gray-400 focus:border-green-500 focus:ring-4 focus:ring-green-100"
+                  value={form.brand}
+                  onChange={(e) => handleChange("brand", e.target.value)}
+                />
+              </>
             )}
 
             <textarea
