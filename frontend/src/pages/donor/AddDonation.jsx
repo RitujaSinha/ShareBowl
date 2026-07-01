@@ -46,9 +46,9 @@ function AddDonation() {
 
       const data = await res.json();
 
-      const orgList = Array.isArray(data)
-        ? data
-        : data.organisations || [];
+      const orgList = Array.isArray(data) ? data : data.organisations || [];
+
+      console.log("All Organisations:", orgList);
 
       setAllOrganisations(orgList);
     } catch (error) {
@@ -64,21 +64,27 @@ function AddDonation() {
     }));
   };
 
+  const normalizeLocationText = (value) => {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[^a-z]/g, "");
+  };
+  
   const filterOrganisationsByLocation = (currentLocation) => {
+    const donorState = normalizeLocationText(currentLocation.state);
+    const donorDistrict = normalizeLocationText(currentLocation.district);
+  
     const filtered = allOrganisations.filter((org) => {
-      const orgState = org.location?.state?.toLowerCase()?.trim();
-      const orgDistrict = org.location?.district?.toLowerCase()?.trim();
-
-      const donorState = currentLocation.state?.toLowerCase()?.trim();
-      const donorDistrict = currentLocation.district?.toLowerCase()?.trim();
-
+      const orgState = normalizeLocationText(org.state);
+      const orgDistrict = normalizeLocationText(org.district);
+  
       return orgState === donorState && orgDistrict === donorDistrict;
     });
-
+  
     setFilteredOrganisations(filtered);
-
+  
     if (filtered.length === 0) {
-      toast.error("No organisation found in your city/district");
+      toast.error("No approved organisation found in your location");
     } else {
       toast.success(`${filtered.length} nearby organisation found`);
     }
@@ -99,24 +105,41 @@ function AddDonation() {
           const lng = pos.coords.longitude;
 
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
           );
 
           const data = await response.json();
+          const address = data?.address || {};
+
+          console.log("LOCATION ADDRESS:", address);
+
+          const state = address.state || "";
+
+          const district =
+            address.state_district ||
+            address.county ||
+            address.district ||
+            "";
+
+          const city =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.suburb ||
+            address.hamlet ||
+            address.municipality ||
+            "";
 
           const currentLocation = {
             lat,
             lng,
-            city:
-              data?.address?.city ||
-              data?.address?.town ||
-              data?.address?.village ||
-              "",
-            district: data?.address?.county || "",
-            state: data?.address?.state || "",
+            city,
+            district,
+            state,
           };
 
           setLocation(currentLocation);
+
           setForm((prev) => ({
             ...prev,
             organisation: "",
@@ -134,6 +157,11 @@ function AddDonation() {
         console.log(error);
         setLoadingLocation(false);
         toast.error("Location access denied");
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
       }
     );
   };
@@ -298,9 +326,7 @@ function AddDonation() {
                   {filteredOrganisations.map((org) => (
                     <div
                       key={org._id}
-                      onClick={() =>
-                        handleChange("organisation", org._id)
-                      }
+                      onClick={() => handleChange("organisation", org._id)}
                       className={`cursor-pointer rounded-3xl border p-5 shadow-sm transition ${
                         form.organisation === org._id
                           ? "border-green-600 bg-green-50 ring-4 ring-green-100"
@@ -334,13 +360,13 @@ function AddDonation() {
 
                         <p className="flex items-center gap-2">
                           <Phone size={16} />
-                          {org.phone || "N/A"}
+                          {org.phone || org.contactNumber || "N/A"}
                         </p>
 
                         <p className="flex items-center gap-2">
                           <MapPin size={16} />
-                          {org.location?.district || "N/A"},{" "}
-                          {org.location?.state || "N/A"}
+                          {org.location?.district || org.district || "N/A"},{" "}
+                          {org.location?.state || org.state || "N/A"}
                         </p>
                       </div>
 

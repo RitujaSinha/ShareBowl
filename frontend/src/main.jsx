@@ -26,6 +26,9 @@ import DonorDirectory from "./pages/admin/DonorDirectory";
 import DonationByLocation from "./pages/admin/DonationByLocation";
 import OrganisationRequests from "./pages/admin/OrganisationRequests";
 
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Toaster position="top-center" />
@@ -136,6 +139,8 @@ createRoot(document.getElementById("root")).render(
           </ProtectedRoute>
         }
       />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
     </Routes>
   </BrowserRouter>
 );

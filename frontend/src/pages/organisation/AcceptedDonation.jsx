@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   CalendarDays,
   CheckCircle2,
+  Clock3,
   HeartHandshake,
   Package,
+  Truck,
   User,
 } from "lucide-react";
 import Sidebar from "../../components/organisation/Sidebar";
@@ -12,7 +14,6 @@ import API_URL from "../../api";
 function AcceptedDonation() {
   const [donations, setDonations] = useState([]);
 
-  // FETCH ACCEPTED DONATIONS
   const fetchAcceptedDonations = async () => {
     try {
       const res = await fetch(
@@ -25,8 +26,8 @@ function AcceptedDonation() {
       const data = await res.json();
 
       if (data.success) {
-        const accepted = (data.donations || []).filter(
-          (d) => d.status === "Accepted"
+        const accepted = (data.donations || []).filter((d) =>
+          ["Accepted", "Pickup Scheduled", "Picked Up"].includes(d.status)
         );
 
         setDonations(accepted);
@@ -42,6 +43,37 @@ function AcceptedDonation() {
   useEffect(() => {
     fetchAcceptedDonations();
   }, []);
+
+  const getBadge = (status) => {
+    switch (status) {
+      case "Accepted":
+        return (
+          <span className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-100 px-3 py-1 text-xs font-black text-green-700">
+            <CheckCircle2 size={14} />
+            Accepted
+          </span>
+        );
+
+      case "Pickup Scheduled":
+        return (
+          <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-100 px-3 py-1 text-xs font-black text-blue-700">
+            <Clock3 size={14} />
+            Pickup Scheduled
+          </span>
+        );
+
+      case "Picked Up":
+        return (
+          <span className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-100 px-3 py-1 text-xs font-black text-purple-700">
+            <Truck size={14} />
+            Picked Up
+          </span>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-[#F5FBF7]">
@@ -61,11 +93,11 @@ function AcceptedDonation() {
                 </p>
 
                 <h1 className="text-2xl font-black text-gray-900">
-                  Accepted Donations
+                  Active Donations
                 </h1>
 
                 <p className="text-sm font-medium text-gray-500">
-                  Donations accepted by your organisation
+                  Accepted and ongoing donations
                 </p>
               </div>
             </div>
@@ -78,11 +110,11 @@ function AcceptedDonation() {
               </div>
 
               <h3 className="text-lg font-black text-gray-900">
-                No accepted donations yet
+                No active donations
               </h3>
 
               <p className="mt-1 text-sm font-medium text-gray-500">
-                Accepted donation records will appear here.
+                Accepted donations will appear here.
               </p>
             </div>
           ) : (
@@ -90,11 +122,11 @@ function AcceptedDonation() {
               <div className="mb-5 flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-black text-gray-900">
-                    Accepted Donation List
+                    Donation List
                   </h2>
 
                   <p className="text-sm font-medium text-gray-500">
-                    Total accepted donations: {donations.length}
+                    Total Active Donations: {donations.length}
                   </p>
                 </div>
 
@@ -104,7 +136,7 @@ function AcceptedDonation() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[720px] border-collapse">
+                <table className="w-full min-w-[760px] border-collapse">
                   <thead>
                     <tr className="border-b border-gray-100 text-left text-sm text-gray-500">
                       <th className="pb-4 font-black">Donor</th>
@@ -119,38 +151,37 @@ function AcceptedDonation() {
                     {donations.map((d) => (
                       <tr
                         key={d._id}
-                        className="border-b border-gray-100 transition hover:bg-green-50/60"
+                        className="border-b border-gray-100 hover:bg-green-50 transition"
                       >
                         <td className="py-4">
                           <div className="flex items-center gap-3">
                             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-50 text-green-700">
-                              <User size={18} strokeWidth={2.5} />
+                              <User size={18} />
                             </div>
 
                             <span className="text-sm font-bold text-gray-900">
-                              {d.donor?.name || "Anonymous"}
+                              {d.donor?.donorName ||
+                                d.donor?.name ||
+                                "Anonymous"}
                             </span>
                           </div>
                         </td>
 
-                        <td className="py-4 text-sm font-semibold text-gray-600">
-                          {d.type}
+                        <td className="py-4 text-sm font-semibold text-gray-700">
+                          {d.foodType || d.type || "N/A"}
                         </td>
 
-                        <td className="py-4 text-sm font-semibold text-gray-600">
+                        <td className="py-4 text-sm font-semibold text-gray-700">
                           {d.quantity}
                         </td>
 
                         <td className="py-4">
-                          <span className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-100 px-3 py-1 text-xs font-black text-green-700">
-                            <CheckCircle2 size={14} strokeWidth={2.5} />
-                            Accepted
-                          </span>
+                          {getBadge(d.status)}
                         </td>
 
                         <td className="py-4">
                           <div className="flex items-center gap-2 text-sm font-semibold text-gray-500">
-                            <CalendarDays size={16} strokeWidth={2.5} />
+                            <CalendarDays size={16} />
                             {new Date(d.createdAt).toLocaleDateString()}
                           </div>
                         </td>

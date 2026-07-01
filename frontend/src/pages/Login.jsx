@@ -205,12 +205,22 @@ export default function Login() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="mt-6 w-full rounded-2xl bg-green-600 px-5 py-4 text-sm font-black text-white shadow-lg shadow-green-600/20 transition hover:bg-green-700"
-            >
-              Login
-            </button>
+          <div className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={() => navigate("/forgot-password")}
+            className="text-sm font-bold text-green-700 transition hover:text-green-800 hover:underline"
+          >
+            Forgot Password?
+          </button>
+        </div>
+
+        <button
+          type="submit"
+          className="mt-4 w-full rounded-2xl bg-green-600 px-5 py-4 text-sm font-black text-white shadow-lg shadow-green-600/20 transition hover:bg-green-700"
+        >
+          Login
+        </button>
           </form>
         </div>
       </div>

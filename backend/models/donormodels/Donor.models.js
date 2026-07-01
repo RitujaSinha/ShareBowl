@@ -74,6 +74,14 @@ const donorSchema = new Schema({
         required:true
     },
 
+    resetPasswordToken: {
+        type: String,
+    },
+      
+    resetPasswordExpires: {
+        type: Date,
+    },
+
 },{timestamps:true})
 
 const Donor = mongoose.model("Donor",donorSchema);
