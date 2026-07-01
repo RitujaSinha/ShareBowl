@@ -1,15 +1,29 @@
 import Donation from "../models/donormodels/Donation.js";
+import Organisation from "../models/organisationmodels/Organisation.models.js";
 
 /* ---------------- DASHBOARD ---------------- */
 export const getOrganisationDashboard = async (req, res) => {
   try {
+
     const organisationId = req.user.userId;
+
+    const organisation = await Organisation.findById(organisationId).select(
+      "-password"
+    );
+
+    console.log("ORG DATA:", organisation);
+
+    if (!organisation) {
+      return res.status(404).json({
+        message: "Organisation not found",
+      });
+    }
 
     const donations = await Donation.find({
       organisation: organisationId,
     })
       .sort({ createdAt: -1 })
-      .populate("donor", "name");
+      .populate("donor", "donorName name email");
 
     const total = donations.length;
 
@@ -21,17 +35,29 @@ export const getOrganisationDashboard = async (req, res) => {
       (d) => d.status === "Pending"
     ).length;
 
-    res.status(200).json({
-      organisationName: req.user.name || "Organisation",
+    return res.status(200).json({
+      organisationName: organisation.organisationName,
+      email: organisation.email,
+      phone: organisation.phone,
+      contactNumber: organisation.contactNumber,
+      address: organisation.address,
+      location: organisation.location,
+      city: organisation.city,
+      district: organisation.district,
+      state: organisation.state,
+      isAdminVerified: organisation.isAdminVerified,
+
       totalDonations: total,
       pendingDonations: pending,
       acceptedDonations: accepted,
       recent: donations.slice(0, 5),
     });
-
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server error" });
+
+    return res.status(500).json({
+      message: "Server error",
+    });
   }
 };
 
@@ -43,17 +69,17 @@ export const getOrgDonations = async (req, res) => {
     const donations = await Donation.find({
       organisation: orgId,
     })
-      .populate("donor", "name email")
+      .populate("donor", "donorName name email")
       .sort({ createdAt: -1 });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       donations,
     });
-
   } catch (error) {
     console.log(error);
-    res.status(500).json({
+
+    return res.status(500).json({
       success: false,
       message: "Server error",
     });
@@ -69,25 +95,35 @@ export const updateDonationStatus = async (req, res) => {
     const donation = await Donation.findById(id);
 
     if (!donation) {
-      return res.status(404).json({ message: "Donation not found" });
+      return res.status(404).json({
+        message: "Donation not found",
+      });
+    }
+
+    if (donation.organisation.toString() !== req.user.userId) {
+      return res.status(403).json({
+        message: "Not authorized",
+      });
     }
 
     donation.status = status;
     await donation.save();
 
-    res.json({
+    return res.json({
       success: true,
       message: "Status updated",
       donation,
     });
-
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Server error" });
+
+    return res.status(500).json({
+      message: "Server error",
+    });
   }
 };
 
-/* ---------------- COUNTS (FIXED) ---------------- */
+/* ---------------- COUNTS ---------------- */
 export const getDonationCounts = async (req, res) => {
   try {
     const orgId = req.user.userId;
@@ -106,14 +142,64 @@ export const getDonationCounts = async (req, res) => {
       status: "Pending",
     });
 
-    res.json({
+    return res.json({
       totalDonations: total,
       acceptedDonations: accepted,
       pendingDonations: pending,
     });
-
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Server error" });
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+export const schedulePickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date, time, note } = req.body;
+
+    if (!date || !time) {
+      return res.status(400).json({
+        message: "Pickup date and time are required",
+      });
+    }
+
+    const donation = await Donation.findById(id);
+
+    if (!donation) {
+      return res.status(404).json({
+        message: "Donation not found",
+      });
+    }
+
+    if (donation.organisation.toString() !== req.user.userId) {
+      return res.status(403).json({
+        message: "Not authorized",
+      });
+    }
+
+    if (donation.status !== "Accepted") {
+      return res.status(400).json({
+        message: "Pickup can be scheduled only after accepting donation",
+      });
+    }
+
+    donation.status = "Pickup Scheduled";
+    donation.pickupSchedule = { date, time, note };
+
+    await donation.save();
+
+    return res.status(200).json({
+      message: "Pickup scheduled successfully",
+      donation,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Server error",
+    });
   }
 };

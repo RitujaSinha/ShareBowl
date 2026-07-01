@@ -1,24 +1,35 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
-import { getOrgDonations, getDonationCounts, getOrganisationDashboard,updateDonationStatus } from "../controllers/OrganisationDashboard.controller.js";
 
 import {
-    //get all organisation list for daonor to donate
-getAllOrganisations,} from "../controllers/getAllorganisation.controller.js";
+  getOrgDonations,
+  getDonationCounts,
+  getOrganisationDashboard,
+  updateDonationStatus,
+  schedulePickup,
+} from "../controllers/OrganisationDashboard.controller.js";
+
+import {
+  getAllOrganisations,
+} from "../controllers/getAllorganisation.controller.js";
 
 const router = express.Router();
 
-router.get("/all",getAllOrganisations);
+// All approved organisations (for donor)
+router.get("/all", getAllOrganisations);
 
-//router for organization dashboard
-/* DASHBOARD */
+// Organisation Dashboard
 router.get("/dashboard", protect, getOrganisationDashboard);
-/* DONATIONS */
+
+// Organisation Donations
 router.get("/org-donations", protect, getOrgDonations);
-/* STATUS */
+
+// Update Donation Status
 router.put("/status/:id", protect, updateDonationStatus);
-/* COUNTS */
+
+// Dashboard Counts
 router.get("/counts", protect, getDonationCounts);
 
+router.put("/pickup/:id", protect, schedulePickup);
 
 export default router;

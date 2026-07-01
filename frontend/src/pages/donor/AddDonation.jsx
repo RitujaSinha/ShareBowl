@@ -7,7 +7,9 @@ import {
   CheckCircle2,
   HeartHandshake,
   Loader2,
+  Mail,
   MapPin,
+  Phone,
   Salad,
   Send,
   ShoppingBasket,
@@ -17,7 +19,8 @@ function AddDonation() {
   const navigate = useNavigate();
 
   const [category, setCategory] = useState("Food");
-  const [organisations, setOrganisations] = useState([]);
+  const [allOrganisations, setAllOrganisations] = useState([]);
+  const [filteredOrganisations, setFilteredOrganisations] = useState([]);
   const [location, setLocation] = useState(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -32,25 +35,53 @@ function AddDonation() {
   });
 
   useEffect(() => {
-    const fetchOrganisations = async () => {
-      try {
-        const res = await fetch(`${API_URL}/organisation/all`);
-        const data = await res.json();
-        setOrganisations(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.log(error);
-        toast.error("Failed to load organisations");
-      }
-    };
-
     fetchOrganisations();
   }, []);
+
+  const fetchOrganisations = async () => {
+    try {
+      const res = await fetch(`${API_URL}/organisation/all`, {
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      const orgList = Array.isArray(data)
+        ? data
+        : data.organisations || [];
+
+      setAllOrganisations(orgList);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load organisations");
+    }
+  };
 
   const handleChange = (field, value) => {
     setForm((prev) => ({
       ...prev,
       [field]: value,
     }));
+  };
+
+  const filterOrganisationsByLocation = (currentLocation) => {
+    const filtered = allOrganisations.filter((org) => {
+      const orgState = org.location?.state?.toLowerCase()?.trim();
+      const orgDistrict = org.location?.district?.toLowerCase()?.trim();
+
+      const donorState = currentLocation.state?.toLowerCase()?.trim();
+      const donorDistrict = currentLocation.district?.toLowerCase()?.trim();
+
+      return orgState === donorState && orgDistrict === donorDistrict;
+    });
+
+    setFilteredOrganisations(filtered);
+
+    if (filtered.length === 0) {
+      toast.error("No organisation found in your city/district");
+    } else {
+      toast.success(`${filtered.length} nearby organisation found`);
+    }
   };
 
   const getLocation = () => {
@@ -73,7 +104,7 @@ function AddDonation() {
 
           const data = await response.json();
 
-          setLocation({
+          const currentLocation = {
             lat,
             lng,
             city:
@@ -83,9 +114,15 @@ function AddDonation() {
               "",
             district: data?.address?.county || "",
             state: data?.address?.state || "",
-          });
+          };
 
-          toast.success("Location added");
+          setLocation(currentLocation);
+          setForm((prev) => ({
+            ...prev,
+            organisation: "",
+          }));
+
+          filterOrganisationsByLocation(currentLocation);
         } catch (error) {
           console.log(error);
           toast.error("Failed to fetch location");
@@ -104,7 +141,12 @@ function AddDonation() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.organisation || !form.foodType || !form.quantity) {
+    if (!form.organisation) {
+      toast.error("Please select an organisation");
+      return;
+    }
+
+    if (!form.foodType || !form.quantity) {
       toast.error("Please fill required fields");
       return;
     }
@@ -149,7 +191,7 @@ function AddDonation() {
 
   return (
     <div className="min-h-screen bg-[#FFF8EF] px-4 py-6">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex items-center justify-between rounded-3xl border border-orange-100 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-600 text-white">
@@ -205,24 +247,125 @@ function AddDonation() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <select
-              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100"
-              value={form.organisation}
-              onChange={(e) => handleChange("organisation", e.target.value)}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <button
+              type="button"
+              onClick={getLocation}
+              disabled={loadingLocation}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-700 hover:bg-green-100 disabled:opacity-70"
             >
-              <option value="">Select Organisation *</option>
+              {loadingLocation ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <MapPin size={18} />
+              )}
+              {loadingLocation ? "Getting Location..." : "Get Location First"}
+            </button>
 
-              {organisations.map((org) => (
-                <option key={org._id} value={org._id}>
-                  {org.organisationName}
-                </option>
-              ))}
-            </select>
+            {location && (
+              <div className="rounded-2xl border border-green-100 bg-green-50 p-4 text-sm text-green-800">
+                <div className="mb-2 flex items-center gap-2 font-bold">
+                  <CheckCircle2 size={18} />
+                  Location Added
+                </div>
+
+                <p>State: {location.state || "N/A"}</p>
+                <p>District: {location.district || "N/A"}</p>
+                <p>City: {location.city || "N/A"}</p>
+              </div>
+            )}
+
+            <div>
+              <h2 className="mb-3 text-lg font-black text-gray-900">
+                Select Nearby Organisation
+              </h2>
+
+              {!location && (
+                <div className="rounded-2xl border border-yellow-100 bg-yellow-50 p-4 text-sm font-semibold text-yellow-700">
+                  Please add your location first. Organisations from your same
+                  state and district will be shown here.
+                </div>
+              )}
+
+              {location && filteredOrganisations.length === 0 && (
+                <div className="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-700">
+                  No approved organisation found in your location.
+                </div>
+              )}
+
+              {location && filteredOrganisations.length > 0 && (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {filteredOrganisations.map((org) => (
+                    <div
+                      key={org._id}
+                      onClick={() =>
+                        handleChange("organisation", org._id)
+                      }
+                      className={`cursor-pointer rounded-3xl border p-5 shadow-sm transition ${
+                        form.organisation === org._id
+                          ? "border-green-600 bg-green-50 ring-4 ring-green-100"
+                          : "border-gray-200 bg-white hover:border-green-300 hover:bg-green-50"
+                      }`}
+                    >
+                      <div className="mb-3 flex items-start justify-between gap-3">
+                        <div>
+                          <h3 className="text-lg font-black text-gray-900">
+                            {org.organisationName}
+                          </h3>
+
+                          <p className="mt-1 text-xs font-bold uppercase tracking-wide text-green-700">
+                            Approved Organisation
+                          </p>
+                        </div>
+
+                        {form.organisation === org._id && (
+                          <CheckCircle2
+                            className="text-green-600"
+                            size={24}
+                          />
+                        )}
+                      </div>
+
+                      <div className="space-y-2 text-sm font-semibold text-gray-600">
+                        <p className="flex items-center gap-2">
+                          <Mail size={16} />
+                          {org.email || "N/A"}
+                        </p>
+
+                        <p className="flex items-center gap-2">
+                          <Phone size={16} />
+                          {org.phone || "N/A"}
+                        </p>
+
+                        <p className="flex items-center gap-2">
+                          <MapPin size={16} />
+                          {org.location?.district || "N/A"},{" "}
+                          {org.location?.state || "N/A"}
+                        </p>
+                      </div>
+
+                      <div
+                        className={`mt-4 rounded-xl px-4 py-2 text-center text-sm font-black ${
+                          form.organisation === org._id
+                            ? "bg-green-600 text-white"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {form.organisation === org._id
+                          ? "Selected"
+                          : "Select Organisation"}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <input
               type="text"
-              placeholder={category === "Food" ? "Food Type *" : "Grocery Item *"}
+              placeholder={
+                category === "Food" ? "Food Type *" : "Grocery Item *"
+              }
               className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold outline-none placeholder:text-gray-400 focus:border-green-500 focus:ring-4 focus:ring-green-100"
               value={form.foodType}
               onChange={(e) => handleChange("foodType", e.target.value)}
@@ -262,33 +405,6 @@ function AddDonation() {
               value={form.description}
               onChange={(e) => handleChange("description", e.target.value)}
             />
-
-            <button
-              type="button"
-              onClick={getLocation}
-              disabled={loadingLocation}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-700 hover:bg-green-100 disabled:opacity-70"
-            >
-              {loadingLocation ? (
-                <Loader2 className="animate-spin" size={18} />
-              ) : (
-                <MapPin size={18} />
-              )}
-              {loadingLocation ? "Getting Location..." : "Get Location"}
-            </button>
-
-            {location && (
-              <div className="rounded-2xl border border-green-100 bg-green-50 p-4 text-sm text-green-800">
-                <div className="mb-2 flex items-center gap-2 font-bold">
-                  <CheckCircle2 size={18} />
-                  Location Added
-                </div>
-
-                <p>State: {location.state || "N/A"}</p>
-                <p>District: {location.district || "N/A"}</p>
-                <p>City: {location.city || "N/A"}</p>
-              </div>
-            )}
 
             <button
               type="submit"

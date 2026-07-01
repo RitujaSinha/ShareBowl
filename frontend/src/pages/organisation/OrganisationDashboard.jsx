@@ -3,12 +3,16 @@ import { useNavigate } from "react-router-dom";
 import API_URL from "../../api";
 import {
   ArrowRight,
+  Building2,
   CheckCircle2,
   Clock3,
   Eye,
   HeartHandshake,
   LogOut,
+  Mail,
+  MapPin,
   PackageCheck,
+  Phone,
   Users,
 } from "lucide-react";
 import Sidebar from "../../components/organisation/Sidebar";
@@ -17,10 +21,7 @@ import LogoutModal from "../../components/LogoutModal";
 export default function OrganisationDashboard() {
   const navigate = useNavigate();
 
-  const [orgInfo, setOrgInfo] = useState({
-    organisationName: "",
-  });
-
+  const [orgInfo, setOrgInfo] = useState({});
   const [counts, setCounts] = useState({
     totalDonations: 0,
     pendingDonations: 0,
@@ -35,11 +36,18 @@ export default function OrganisationDashboard() {
       const res = await fetch(`${API_URL}/organisation/dashboard`, {
         credentials: "include",
       });
-
+  
       const data = await res.json();
-
+  
+      console.log("Dashboard Response:", data);
+  
       setOrgInfo(data);
-      setCounts(data);
+  
+      setCounts({
+        totalDonations: data.totalDonations || 0,
+        pendingDonations: data.pendingDonations || 0,
+        acceptedDonations: data.acceptedDonations || 0,
+      });
     } catch (err) {
       console.log(err);
     }
@@ -88,7 +96,6 @@ export default function OrganisationDashboard() {
       localStorage.removeItem("token");
 
       setShowLogoutModal(false);
-
       navigate("/login");
     } catch (error) {
       console.log(error);
@@ -140,24 +147,90 @@ export default function OrganisationDashboard() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="rounded-2xl border border-green-100 bg-green-50 px-4 py-3">
-                <p className="text-sm font-black text-gray-900">
-                  {orgInfo.organisationName || "Loading..."}
-                </p>
+            <button
+              onClick={() => setShowLogoutModal(true)}
+              className="flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-100"
+            >
+              <LogOut size={17} />
+              Logout
+            </button>
+          </div>
 
-                <p className="text-xs font-bold text-green-700">
-                  NGO Organisation
+          <div className="mb-6 rounded-3xl border border-green-100 bg-white p-5 shadow-sm">
+            <div className="mb-5 flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-green-100 text-green-700">
+                <Building2 size={24} strokeWidth={2.5} />
+              </div>
+
+              <div>
+                <h2 className="text-xl font-black text-gray-900">
+                  Organisation Information
+                </h2>
+
+                <p className="text-sm font-medium text-gray-500">
+                  Basic registered details of your organisation
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="rounded-2xl border border-green-100 bg-green-50 p-4">
+                <p className="text-xs font-black uppercase tracking-widest text-green-700">
+                  Organisation Name
+                </p>
+                <p className="mt-1 text-lg font-black text-gray-900">
+                  {orgInfo.organisationName || "N/A"}
                 </p>
               </div>
 
-              <button
-                onClick={() => setShowLogoutModal(true)}
-                className="flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-100"
-              >
-                <LogOut size={17} />
-                Logout
-              </button>
+              <div className="rounded-2xl border border-green-100 bg-green-50 p-4">
+                <p className="text-xs font-black uppercase tracking-widest text-green-700">
+                  Verification Status
+                </p>
+                <p className="mt-1 flex items-center gap-2 text-lg font-black text-gray-900">
+                  <CheckCircle2 size={20} className="text-green-700" />
+                  {orgInfo.isAdminVerified ? "Verified" : "Pending"}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                <p className="mb-1 flex items-center gap-2 text-sm font-bold text-gray-500">
+                  <Mail size={16} />
+                  Email
+                </p>
+                <p className="text-sm font-black text-gray-900">
+                  {orgInfo.email || "N/A"}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                <p className="mb-1 flex items-center gap-2 text-sm font-bold text-gray-500">
+                  <Phone size={16} />
+                  Phone
+                </p>
+                <p className="text-sm font-black text-gray-900">
+                  {orgInfo.phone || orgInfo.contactNumber || "N/A"}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 md:col-span-2">
+                <p className="mb-1 flex items-center gap-2 text-sm font-bold text-gray-500">
+                  <MapPin size={16} />
+                  Location
+                </p>
+                <p className="text-sm font-black text-gray-900">
+                  {orgInfo.location?.city || orgInfo.city || "N/A"},{" "}
+                  {orgInfo.location?.district || orgInfo.district || "N/A"},{" "}
+                  {orgInfo.location?.state || orgInfo.state || "N/A"}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 md:col-span-2">
+                <p className="text-sm font-bold text-gray-500">Address</p>
+                <p className="mt-1 text-sm font-black text-gray-900">
+                  {orgInfo.address || orgInfo.location?.address || "N/A"}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -255,11 +328,11 @@ export default function OrganisationDashboard() {
                     {donations.slice(0, 5).map((d) => (
                       <tr key={d._id} className="border-b border-gray-100">
                         <td className="py-4 text-sm font-bold text-gray-900">
-                          {d.donor?.name || "Anonymous"}
+                          {d.donor?.donorName || d.donor?.name || "Anonymous"}
                         </td>
 
                         <td className="py-4 text-sm font-semibold text-gray-600">
-                          {d.type}
+                          {d.foodType || d.type || "N/A"}
                         </td>
 
                         <td className="py-4 text-sm font-semibold text-gray-600">
