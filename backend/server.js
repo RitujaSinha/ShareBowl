@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cookieParser from "cookie-parser";
 import connectDb from "./config/connectDB.js";
@@ -8,7 +10,8 @@ import authRoutes from "./routes/auth.routes.js";
 import organisationRoutes from "./routes/organisation.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 
-dotenv.config();
+console.log("EMAIL_USER =", process.env.EMAIL_USER);
+console.log("EMAIL_PASS =", process.env.EMAIL_PASS ? "Loaded" : "Missing");
 
 const app = express();
 

@@ -1,10 +1,7 @@
 import bcrypt from "bcrypt";
-import validator from "validator"; 
 import Donor from "../models/donormodels/Donor.models.js";
 import Organisation from "../models/organisationmodels/Organisation.models.js";
-import crypto from "crypto";
 import { sendEmail } from "../utils/sendEmail.js";
-
 import generateToken from "../utils/generateToken.js";
 
 export const login = async (req, res) => {
@@ -12,14 +9,14 @@ export const login = async (req, res) => {
     const { role, email, password } = req.body;
 
     if (!email || !password || !role) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({
+        message: "All fields are required",
+      });
     }
 
     let user = null;
 
-    // ================= ADMIN =================
     if (role === "admin") {
-
       if (
         email !== process.env.ADMIN_EMAIL ||
         password !== process.env.ADMIN_PASSWORD
@@ -28,38 +25,35 @@ export const login = async (req, res) => {
           message: "Wrong credentials",
         });
       }
-    
+
       user = {
         _id: "admin",
         email: process.env.ADMIN_EMAIL,
         role: "admin",
       };
-    }
-
-
-    
-
-    // ================= DONOR =================
-    else if (role === "donor") {
+    } else if (role === "donor") {
       user = await Donor.findOne({ email });
 
       if (!user || !user.isEmailVerified) {
-        return res.status(401).json({ message: "Wrong credentials" });
+        return res.status(401).json({
+          message: "Wrong credentials",
+        });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
-        return res.status(401).json({ message: "Wrong credentials" });
+        return res.status(401).json({
+          message: "Wrong credentials",
+        });
       }
-    }
-
-    // ================= ORGANISATION =================
-    else if (role === "organisation") {
+    } else if (role === "organisation") {
       user = await Organisation.findOne({ email });
 
       if (!user || !user.isEmailVerified) {
-        return res.status(401).json({ message: "Wrong credentials" });
+        return res.status(401).json({
+          message: "Wrong credentials",
+        });
       }
 
       if (!user.isAdminVerified) {
@@ -72,16 +66,16 @@ export const login = async (req, res) => {
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
-        return res.status(401).json({ message: "Wrong credentials" });
+        return res.status(401).json({
+          message: "Wrong credentials",
+        });
       }
+    } else {
+      return res.status(400).json({
+        message: "Invalid role",
+      });
     }
 
-    // ================= INVALID ROLE =================
-    else {
-      return res.status(400).json({ message: "Invalid role" });
-    }
-
-    // ================= GENERATE TOKEN =================
     const token = generateToken(user);
 
     res.cookie("token", token, {
@@ -91,7 +85,6 @@ export const login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // ================= UNIFIED RESPONSE =================
     return res.status(200).json({
       message: "Login successful",
       user: {
@@ -100,40 +93,35 @@ export const login = async (req, res) => {
         role: user.role,
       },
     });
-
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Server error!" });
+
+    return res.status(500).json({
+      message: "Server error!",
+    });
   }
 };
 
-//logout 
 export const logout = async (req, res) => {
-
   try {
-
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Logout successful",
     });
-
   } catch (error) {
-
     console.log(error);
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server Error",
     });
   }
 };
 
-
-//for protect internal route
 export const getMe = (req, res) => {
   return res.json({
     user: req.user,
@@ -168,36 +156,36 @@ export const forgotPassword = async (req, res) => {
       });
     }
 
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    user.resetPasswordToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
-
-    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
+    user.resetOtp = otp;
+    user.resetOtpExpires = Date.now() + 10 * 60 * 1000;
 
     await user.save();
 
-    const frontendUrl =
-      process.env.FRONTEND_URL || "http://localhost:5173";
+    try {
+      await sendEmail(
+        user.email,
+        "ShareBowl Password Reset OTP",
+        `
+        <h2>Password Reset OTP</h2>
+        <p>Hello,</p>
+        <p>Your OTP is:</p>
+        <h1>${otp}</h1>
+        <p>This OTP is valid for 10 minutes.</p>
+        <p>If you did not request this, please ignore this email.</p>
+        `
+      );
+    } catch (emailError) {
+      console.error("RESET OTP EMAIL ERROR:", emailError.message);
 
-    const resetUrl = `${frontendUrl}/reset-password/${resetToken}?role=${role}`;
-
-    await sendEmail(
-      user.email,
-      "ShareBowl Password Reset",
-      `
-      <h2>Password Reset Request</h2>
-      <p>Hello,</p>
-      <p>Click the link below to reset your password. This link is valid for 15 minutes.</p>
-      <a href="${resetUrl}">Reset Password</a>
-      <p>If you did not request this, please ignore this email.</p>
-      `
-    );
+      return res.status(500).json({
+        message: "Failed to send OTP. Check email configuration.",
+      });
+    }
 
     return res.status(200).json({
-      message: "Password reset link sent to your email",
+      message: "OTP sent to your email",
     });
   } catch (error) {
     console.log(error);
@@ -210,31 +198,31 @@ export const forgotPassword = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   try {
-    const { token } = req.params;
-    const { password, role } = req.body;
+    const { email, role, otp, password } = req.body;
 
-    if (!password || !role) {
+    if (!email || !role || !otp || !password) {
       return res.status(400).json({
-        message: "Password and role are required",
+        message: "Email, role, OTP and password are required",
       });
     }
-
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
 
     let user;
 
     if (role === "donor") {
       user = await Donor.findOne({
-        resetPasswordToken: hashedToken,
-        resetPasswordExpires: { $gt: Date.now() },
+        email,
+        resetOtp: otp,
+        resetOtpExpires: {
+          $gt: Date.now(),
+        },
       });
     } else if (role === "organisation") {
       user = await Organisation.findOne({
-        resetPasswordToken: hashedToken,
-        resetPasswordExpires: { $gt: Date.now() },
+        email,
+        resetOtp: otp,
+        resetOtpExpires: {
+          $gt: Date.now(),
+        },
       });
     } else {
       return res.status(400).json({
@@ -244,20 +232,20 @@ export const resetPassword = async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
-        message: "Invalid or expired reset token",
+        message: "Invalid or expired OTP",
       });
     }
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
 
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+    user.resetOtp = undefined;
+    user.resetOtpExpires = undefined;
 
     await user.save();
 
     return res.status(200).json({
-      message: "Password reset successful",
+      message: "Password reset successfully",
     });
   } catch (error) {
     console.log(error);
